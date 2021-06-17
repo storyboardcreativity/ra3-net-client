@@ -11,16 +11,8 @@
 
 // own headers
 #include "printing_macros.h"
-
-// RA3 string macros
-#define RA3_STRING_PATCHINFO "ra3_russian_1.12"
-#define RA3_STRING_MAPS_COUNT "65536"
-#define RA3_STRING_LOCALE "russian"
-#define RA3_STRING_LIVESUITE_PATH "u/f/eagames/redalert3/patches/livesite"
-
-// RA3 servers
-#define RA3_STRING_SERVER_DOWNLOADS_ORIGINAL "na.llnet.eadownloads.ea.com"
-#define RA3_STRING_SERVER_DOWNLOADS "http.server.cnc-online.net"
+#include "ra3_constants.h"
+#include "gamespy.h"
 
 // ===
 
@@ -44,7 +36,7 @@ void process_http_connection(const char* server, const char* server_original, co
         request.setOpt(new curlpp::options::HttpHeader(header));
 
         request.setOpt(new curlpp::options::Url(string_format("http://%s/%s/%s", server, path, file_name)));
-        request.setOpt(new curlpp::options::Verbose(true));
+        //request.setOpt(new curlpp::options::Verbose(true));
 
         request.perform();
     }
@@ -60,6 +52,8 @@ void process_http_connection(const char* server, const char* server_original, co
 
 void process_download_step()
 {
+    PROCESS_MESSAGE__DEBUG("Processing download step [1]");
+
     process_http_connection(
         RA3_STRING_SERVER_DOWNLOADS,
         RA3_STRING_SERVER_DOWNLOADS_ORIGINAL,
@@ -96,4 +90,8 @@ int main()
     PROCESS_MESSAGE__OK("Red Alert 3 network client!");
 
     process_download_step();
+
+    process_gamespy_avail_ping();
+
+    
 }
