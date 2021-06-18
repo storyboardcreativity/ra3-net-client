@@ -13,6 +13,7 @@
 #include "printing_macros.h"
 #include "ra3_constants.h"
 #include "gamespy.h"
+#include "fesl.h"
 
 // ===
 
@@ -93,5 +94,5 @@ int main()
 
     process_gamespy_avail_ping();
 
-    
+    init_fesl_secure_connection();
 }
