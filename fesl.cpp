@@ -15,8 +15,28 @@
 
 //
 #include "DirtySDKEAWebKit/socketapicallbacks.h"
+#include "DirtySDKEAWebKit/protossl.h"
+#include "DirtySDKEAWebKit/dirtynet.h"
 
 void init_fesl_secure_connection()
 {
+    // Initialize API callbacks
     init_socket_api_callbacks();
+
+    // Initialize EA socket
+    SocketCreate(0);
+
+    // Create ProtoSSL instance
+    auto sslref = ProtoSSLCreate();
+
+    // Reset ProtoSSL instance
+    ProtoSSLReset(sslref);
+
+    // Prepare
+    ProtoSSLConnect(sslref, 0, RA3_STRING_SERVER_FESL, 0, RA3_STRING_SERVER_FESL_PORT);
+
+    // Update (to connect)
+    ProtoSSLUpdate(sslref);
+
+    PROCESS_MESSAGE__DEBUG("ProtoSSLConnect done!");
 }

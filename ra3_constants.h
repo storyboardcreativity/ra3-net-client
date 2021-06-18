@@ -18,6 +18,7 @@
 
 #define RA3_STRING_SERVER_FESL_ORIGINAL RA3_STRING_FESL_GAMENAME".fesl.ea.com"
 #define RA3_STRING_SERVER_FESL "login.server.cnc-online.net"
+#define RA3_STRING_SERVER_FESL_PORT 27900
 
 // RA3 paths
 

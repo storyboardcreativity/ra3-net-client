@@ -60,17 +60,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  #endif
 #endif
 
-
 #if DIRTYCODE_DEBUG
  #define NetPrintf(_x) NetPrintfCode _x
  #define NetPrintfVerbose(_x) NetPrintfVerboseCode _x
  #define NetPrintMem(_pMem, _iSize, _pTitle) NetPrintMemCode(_pMem, _iSize, _pTitle)
  #define NetPrintWrap(_pString, _iWrapCol) NetPrintWrapCode(_pString, _iWrapCol)
 #else
- #define NetPrintf(_x) { }
- #define NetPrintfVerbose(_x) { }
- #define NetPrintMem(_pMem, _iSize, _pTitle) { }
- #define NetPrintWrap(_pString, _iWrapCol) { }
+// #define NetPrintf(_x) { }
+// #define NetPrintfVerbose(_x) { }
+// #define NetPrintMem(_pMem, _iSize, _pTitle) { }
+// #define NetPrintWrap(_pString, _iWrapCol) { }
+
+    #include <stdio.h>
+
+  #define NetPrintf(_x) {printf _x;}
+  #define NetPrintfVerbose(_x) {printf _x;}
+  #define NetPrintMem(_pMem, _iSize, _pTitle) { }
+  #define NetPrintWrap(_pString, _iWrapCol) { }
 #endif
 
 /*** Macros ****************************************************************************/
