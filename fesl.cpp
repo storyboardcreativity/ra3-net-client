@@ -146,6 +146,48 @@ void login_persona(ProtoSSLRefT *ref)
     PROCESS_MESSAGE__OK("Server sent us response:\n%s", response.c_str());
 }
 
+void get_telemetry_token(ProtoSSLRefT *ref)
+{
+    PROCESS_MESSAGE__INFO("Requesting telemetry token...");
+
+    // Send request
+    auto telemetry_request_string = "TXN=GetTelemetryToken\n";
+    fesl_send(ref, 'acct', 0x070000C0, telemetry_request_string);
+
+    // Wait for response from server
+    auto response = fesl_recv(ref);
+    PROCESS_MESSAGE__OK("Server sent us response:\n%s", response.c_str());
+}
+
+void gamespy_pre_auth(ProtoSSLRefT *ref)
+{
+    PROCESS_MESSAGE__INFO("Sending GameSpy pre-auth request...");
+
+    // Send request
+    auto request_string = "TXN=GameSpyPreAuth\n";
+    fesl_send(ref, 'acct', 0x080000C0, request_string);
+
+    // Wait for response from server
+    auto response = fesl_recv(ref);
+    PROCESS_MESSAGE__OK("Server sent us response:\n%s", response.c_str());
+}
+
+void process_ping(ProtoSSLRefT *ref)
+{
+    PROCESS_MESSAGE__INFO("Answering ping...");
+
+    // Wait for response from server
+    auto response = fesl_recv(ref);
+    PROCESS_MESSAGE__OK("Server sent us:\n%s", response.c_str());
+
+    if (response == "TXN=Ping")
+    {
+        // Send request
+        auto request_string = "TXN=Ping\n";
+        fesl_send(ref, 'fsys', 0x090000C0, request_string);
+    }
+}
+
 void init_fesl_secure_connection()
 {
     // Initialize API callbacks
@@ -183,6 +225,15 @@ void init_fesl_secure_connection()
 
     // Login our persona
     login_persona(sslref);
+
+    // Get telemetry token
+    get_telemetry_token(sslref);
+
+    // Request GameSpy pre-auth
+    gamespy_pre_auth(sslref);
+
+    //
+    process_ping(sslref);
 
     PROCESS_MESSAGE__DEBUG("Done!");
 }

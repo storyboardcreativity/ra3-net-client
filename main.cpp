@@ -14,6 +14,7 @@
 #include "ra3_constants.h"
 #include "gamespy.h"
 #include "fesl.h"
+#include "peerchat.h"
 
 // ===
 
@@ -95,4 +96,6 @@ int main()
     process_gamespy_avail_ping();
 
     init_fesl_secure_connection();
+
+    process_peerchat_connection();
 }

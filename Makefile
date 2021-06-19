@@ -11,8 +11,13 @@ SOURCE_FILES += terminal_printing_system.cpp
 SOURCE_FILES += printing_tools.cpp
 SOURCE_FILES += gamespy.cpp
 SOURCE_FILES += fesl.cpp
+SOURCE_FILES += peerchat.cpp
+SOURCE_FILES += ra3_engine_tools/ra3_engine_tools.cpp
 
 # C files
+SOURCE_FILES += peerchat_encryption.c
+
+# DirtySDKEAWebKit
 SOURCE_FILES += DirtySDKEAWebKit/cryptarc4.c
 SOURCE_FILES += DirtySDKEAWebKit/dirtylibps3.c
 SOURCE_FILES += DirtySDKEAWebKit/dirtynetps3.c

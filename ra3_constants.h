@@ -7,6 +7,7 @@
 #define RA3_STRING_PATCHINFO "ra3_russian_1.12"
 #define RA3_STRING_MAPS_COUNT "65536"
 #define RA3_STRING_LOCALE "russian"
+#define RA3_STRING_PEERCHAT_SECRET_KEY "uBZwpf"
 
 // RA3 servers
 
@@ -20,6 +21,10 @@
 #define RA3_STRING_SERVER_FESL "login.server.cnc-online.net"
 #define RA3_STRING_SERVER_FESL_PORT 18840
 
+#define RA3_STRING_SERVER_PEERCHAT_ORIGINAL "peerchat.gamespy.com"
+#define RA3_STRING_SERVER_PEERCHAT "peerchat.server.cnc-online.net"
+#define RA3_STRING_SERVER_PEERCHAT_PORT 6667
+
 // RA3 paths
 
 #define RA3_STRING_LIVESUITE_PATH "u/f/eagames/redalert3/patches/livesite"
@@ -29,3 +34,5 @@
 #define RA3_ACCOUNT_EMAIL "example@example.com"
 #define RA3_ACCOUNT_PASSWORD "example_password"
 #define RA3_ACCOUNT_ID "example_account_id"
+#define RA3_ACCOUNT_GSID "1234567890"
+#define RA3_ACCOUNT_CDKEY "12345678901234567890123456789012"
