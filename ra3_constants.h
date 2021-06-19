@@ -23,3 +23,9 @@
 // RA3 paths
 
 #define RA3_STRING_LIVESUITE_PATH "u/f/eagames/redalert3/patches/livesite"
+
+// RA3 login info
+
+#define RA3_ACCOUNT_EMAIL "example@example.com"
+#define RA3_ACCOUNT_PASSWORD "example_password"
+#define RA3_ACCOUNT_ID "example_account_id"

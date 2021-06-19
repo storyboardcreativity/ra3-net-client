@@ -18,6 +18,134 @@
 #include "DirtySDKEAWebKit/protossl.h"
 #include "DirtySDKEAWebKit/dirtynet.h"
 
+void fesl_send(ProtoSSLRefT *ref, uint32_t type, uint32_t magic, const char *str)
+{
+    // === HEADER ===
+    // [4 bytes (Big Endian)] - header (packet type)
+    // [4 bytes (Big Endian)] - ??? (unknown magic)
+    // [4 bytes (Big Endian)] - full packet size, including this header
+    // ==== BODY ====
+    // ... - char string with null terminator ('\0')
+    // ==============
+
+    uint32_t size = 4 + 4 + 4 + strlen(str) + 1;
+    auto data = new uint8_t[size];
+    (*(uint32_t *)&data[0]) = htonl(type);
+    (*(uint32_t *)&data[4]) = htonl(magic);
+    (*(uint32_t *)&data[8]) = htonl(size);
+    memcpy(&data[12], str, size - 12);
+
+    PROCESS_MESSAGE__DEBUG("Sending data:");
+    PROCESS_BUFMESSAGE__DEBUG(data, size);
+
+    ProtoSSLSend(ref, (const char *)data, size);
+
+    delete[] data;
+}
+
+std::string fesl_recv(ProtoSSLRefT *ref)
+{
+    const int max_size = 2048;
+    uint8_t data[max_size];
+
+    int32_t sz = ProtoSSLRecv(ref, (char *)data, max_size);
+    
+    PROCESS_MESSAGE__DEBUG("Received data:");
+    PROCESS_BUFMESSAGE__DEBUG(data, sz);
+
+    return std::string((char*)&data[12]);
+}
+
+void send_client_hello(ProtoSSLRefT *ref)
+{
+    PROCESS_MESSAGE__INFO("Sending \"HELLO\" to server...");
+
+    // Send "HELLO" request
+    auto hello_string = "TXN=Hello\n"
+                        "clientString=cncra3-pc\n"
+                        "sku=15299\n"
+                        "locale=ru\n"
+                        "clientPlatform=PC\n"
+                        "clientVersion=1.0\n"
+                        "SDKVersion=4.3.4.0.0\n"
+                        "protocolVersion=2.0\n"
+                        "fragmentSize=8096\n"
+                        "clientType=\n"; // for some reason "clientType" field is empty
+    fesl_send(ref, 'fsys', 0xC0000001, hello_string);
+
+    // Wait for response (standard list with parameters)
+    auto response = fesl_recv(ref);
+    PROCESS_MESSAGE__OK("Server responded to our \"HELLO\" message with this text:\n%s", response.c_str());
+
+    // Wait for memcheck response
+    response = fesl_recv(ref);
+    PROCESS_MESSAGE__OK("Server sent us memcheck data:\n%s", response.c_str());
+
+    // Imitate memcheck stage
+    auto memcheck_string = "TXN=MemCheck\n"
+                           "result=\n"; // for some reason "result" field is empty
+    fesl_send(ref, 'fsys', 0x00000080, memcheck_string);
+}
+
+void send_login_info(ProtoSSLRefT *ref)
+{
+    PROCESS_MESSAGE__INFO("Logging in...");
+
+    // Send login request
+    auto login_string = "TXN=NuLogin\n"
+                        "returnEncryptedInfo=1\n"
+                        "nuid="RA3_ACCOUNT_EMAIL"\n"                // << here is our username
+                        "password="RA3_ACCOUNT_PASSWORD"\n"         // << here is out password
+                        "macAddr=$cccccccccccc\n";  // for some reason this field is filled with 'c'
+    fesl_send(ref, 'acct', 0x020000C0, login_string);
+
+    // Wait for response from server
+    auto response = fesl_recv(ref);
+    PROCESS_MESSAGE__OK("Server sent us login response:\n%s", response.c_str());
+}
+
+void get_personas(ProtoSSLRefT *ref)
+{
+    PROCESS_MESSAGE__INFO("Getting personas list...");
+
+    // Send request
+    auto personas_request_string = "TXN=NuGetPersonas\n"
+                                   "namespace=\n"; // for some reason "namespace" field is empty
+    fesl_send(ref, 'acct', 0x030000C0, personas_request_string);
+
+    // Wait for response from server
+    auto response = fesl_recv(ref);
+    PROCESS_MESSAGE__OK("Server sent us personas list:\n%s", response.c_str());
+}
+
+void add_persona(ProtoSSLRefT *ref)
+{
+    PROCESS_MESSAGE__INFO("Adding persona to account...");
+
+    // Send request
+    auto add_persona_request_string = "TXN=NuAddPersona\n"
+                                      "name="RA3_ACCOUNT_ID"\n";
+    fesl_send(ref, 'acct', 0x040000C0, add_persona_request_string);
+
+    // Wait for response from server
+    auto response = fesl_recv(ref);
+    PROCESS_MESSAGE__OK("Server sent us response:\n%s", response.c_str());
+}
+
+void login_persona(ProtoSSLRefT *ref)
+{
+    PROCESS_MESSAGE__INFO("Processing login to persona...");
+
+    // Send request
+    auto login_persona_request_string = "TXN=NuLoginPersona\n"
+                                        "name="RA3_ACCOUNT_ID"\n";
+    fesl_send(ref, 'acct', 0x060000C0, login_persona_request_string);
+
+    // Wait for response from server
+    auto response = fesl_recv(ref);
+    PROCESS_MESSAGE__OK("Server sent us response:\n%s", response.c_str());
+}
+
 void init_fesl_secure_connection()
 {
     // Initialize API callbacks
@@ -35,11 +163,26 @@ void init_fesl_secure_connection()
     // Allow any valid certificate (don't check if cert is issued to using host)
     ProtoSSLControl(sslref, 'ncrt', 1, 0, nullptr);
 
-    // Prepare
+    // Prepare connection
     ProtoSSLConnect(sslref, 1, RA3_STRING_SERVER_FESL_ORIGINAL, 0, RA3_STRING_SERVER_FESL_PORT);
 
-    // Update (to connect)
+    // Update (we connect here and make secure handshake)
     ProtoSSLUpdate(sslref);
 
-    PROCESS_MESSAGE__DEBUG("ProtoSSLConnect done!");
+    // Process client hello to RA3 server
+    send_client_hello(sslref);
+
+    // Try to login
+    send_login_info(sslref);
+
+    // Get names list of our account
+    get_personas(sslref);
+
+    // Add our persona to account
+    add_persona(sslref);
+
+    // Login our persona
+    login_persona(sslref);
+
+    PROCESS_MESSAGE__DEBUG("Done!");
 }
