@@ -32,8 +32,11 @@ void init_fesl_secure_connection()
     // Reset ProtoSSL instance
     ProtoSSLReset(sslref);
 
+    // Allow any valid certificate (don't check if cert is issued to using host)
+    ProtoSSLControl(sslref, 'ncrt', 1, 0, nullptr);
+
     // Prepare
-    ProtoSSLConnect(sslref, 0, RA3_STRING_SERVER_FESL, 0, RA3_STRING_SERVER_FESL_PORT);
+    ProtoSSLConnect(sslref, 1, RA3_STRING_SERVER_FESL_ORIGINAL, 0, RA3_STRING_SERVER_FESL_PORT);
 
     // Update (to connect)
     ProtoSSLUpdate(sslref);

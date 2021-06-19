@@ -53,6 +53,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "system_types.h"
 #include "string_tools.h"
 
+#include "../printing_macros.h"
+
 /*** Defines ***************************************************************************/
 
 #define DIRTYCODE_DEBUG 0
@@ -2030,22 +2032,18 @@ void ProtoSSLUpdate(ProtoSSLRefT *pState)
 
     if (pState->iState == ST_CONN)
     {
-        iResult = SocketConnect(pState->pSock, &pState->PeerAddr, sizeof pState->PeerAddr);
-
-        if(iResult == SOCKERR_NONE)
-        {
-            pState->iState = ST_WAIT;
-        }
-        else
-        {
-            pState->iState = ST_FAIL_CONN;
-            pState->iClosed = 1;
-        }
+        PROCESS_MESSAGE__DEBUG("SocketConnect");
+        SocketConnect(pState->pSock, &pState->PeerAddr, sizeof pState->PeerAddr);
+        pState->iState = ST_WAIT;
     }
+
+    // FIXME: Without this sleep it does not work! (SocketInfo result will be 0)
+    usleep(100000);
 
     if (pState->iState == ST_WAIT)
     {
         iResult = SocketInfo(pState->pSock, 'stat', 0, NULL, 0);
+        PROCESS_MESSAGE__DEBUG("SocketInfo iResult == %d", iResult);
         if (iResult > 0)
         {
             pState->iState = (pSecure ? ST3_SEND_HELLO : ST_UNSECURE);
@@ -2084,6 +2082,7 @@ void ProtoSSLUpdate(ProtoSSLRefT *pState)
 
         if (pSecure->iSendProg < pSecure->iSendSize)
         {
+            PROCESS_MESSAGE__DEBUG("SocketSend");
             iResult = SocketSend(pState->pSock, pSecure->SendData+pSecure->iSendProg, pSecure->iSendSize-pSecure->iSendProg, 0);
             if (iResult > 0)
             {
@@ -2095,6 +2094,9 @@ void ProtoSSLUpdate(ProtoSSLRefT *pState)
                 pSecure->iSendProg = pSecure->iSendSize = 0;
             }
         }
+
+        // FIXME: Without this sleep it does not work! (SocketInfo result will be 0)
+        usleep(100000);
 
         if (pSecure->iRecvSize < SSL_MIN_PACKET)
         {
@@ -2108,10 +2110,6 @@ void ProtoSSLUpdate(ProtoSSLRefT *pState)
             {
                 pState->iClosed = 1;
             }
-        }
-        if (pSecure->iRecvSize < SSL_MIN_PACKET)
-        {
-            break;
         }
 
         if (pSecure->iRecvSize == SSL_MIN_PACKET)

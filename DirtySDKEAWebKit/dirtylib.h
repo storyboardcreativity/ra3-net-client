@@ -71,8 +71,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // #define NetPrintMem(_pMem, _iSize, _pTitle) { }
 // #define NetPrintWrap(_pString, _iWrapCol) { }
 
-    #include <stdio.h>
-
+  #include <stdio.h>
   #define NetPrintf(_x) {printf _x;}
   #define NetPrintfVerbose(_x) {printf _x;}
   #define NetPrintMem(_pMem, _iSize, _pTitle) { }
