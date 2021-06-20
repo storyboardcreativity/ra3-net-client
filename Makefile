@@ -12,7 +12,10 @@ SOURCE_FILES += printing_tools.cpp
 SOURCE_FILES += gamespy.cpp
 SOURCE_FILES += fesl.cpp
 SOURCE_FILES += peerchat.cpp
+SOURCE_FILES += gpcm.cpp
 SOURCE_FILES += ra3_engine_tools/ra3_engine_tools.cpp
+SOURCE_FILES += ra3_engine_tools/md5.cpp
+SOURCE_FILES += client_info.cpp
 
 # C files
 SOURCE_FILES += peerchat_encryption.c

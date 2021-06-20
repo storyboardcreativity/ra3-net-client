@@ -25,6 +25,10 @@
 #define RA3_STRING_SERVER_PEERCHAT "peerchat.server.cnc-online.net"
 #define RA3_STRING_SERVER_PEERCHAT_PORT 6667
 
+#define RA3_STRING_SERVER_GPCM_ORIGINAL "gpcm.gamespy.com"
+#define RA3_STRING_SERVER_GPCM "gpcm.server.cnc-online.net"
+#define RA3_STRING_SERVER_GPCM_PORT 29900
+
 // RA3 paths
 
 #define RA3_STRING_LIVESUITE_PATH "u/f/eagames/redalert3/patches/livesite"
@@ -34,5 +38,4 @@
 #define RA3_ACCOUNT_EMAIL "example@example.com"
 #define RA3_ACCOUNT_PASSWORD "example_password"
 #define RA3_ACCOUNT_ID "example_account_id"
-#define RA3_ACCOUNT_GSID "1234567890"
 #define RA3_ACCOUNT_CDKEY "12345678901234567890123456789012"

@@ -12,6 +12,7 @@
 // own headers
 #include "printing_macros.h"
 #include "ra3_constants.h"
+#include "client_info.h"
 
 //
 #include "DirtySDKEAWebKit/socketapicallbacks.h"
@@ -144,6 +145,11 @@ void login_persona(ProtoSSLRefT *ref)
     // Wait for response from server
     auto response = fesl_recv(ref);
     PROCESS_MESSAGE__OK("Server sent us response:\n%s", response.c_str());
+
+    // Extract profileId from response
+    auto profileId = response.substr(response.find("profileId=") + 10);
+    PROCESS_MESSAGE__OK("Got profileId: %s", profileId.c_str());
+    nuloginpersona__profile_id__set(profileId);
 }
 
 void get_telemetry_token(ProtoSSLRefT *ref)
@@ -170,6 +176,18 @@ void gamespy_pre_auth(ProtoSSLRefT *ref)
     // Wait for response from server
     auto response = fesl_recv(ref);
     PROCESS_MESSAGE__OK("Server sent us response:\n%s", response.c_str());
+
+    // Extract ticket from response
+    auto ticket = response.substr(response.find("ticket=") + 7);
+    PROCESS_MESSAGE__OK("Got pre-auth ticket: %s", ticket.c_str());
+    preauth__ticket__set(ticket);
+
+    // Extract challenge from response
+    auto offsetA = response.find("challenge=") + 10;
+    auto offsetB = response.find("\nticket=");
+    auto challenge = response.substr(offsetA, offsetB - offsetA);
+    PROCESS_MESSAGE__OK("Got pre-auth challenge: %s", challenge.c_str());
+    preauth__challenge__set(challenge);
 }
 
 void process_ping(ProtoSSLRefT *ref)

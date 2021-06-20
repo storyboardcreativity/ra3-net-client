@@ -17,6 +17,7 @@
 #include "printing_tools.h"
 #include "peerchat_encryption.h"
 #include "ra3_engine_tools/ra3_engine_tools.h"
+#include "client_info.h"
 
 int g_socket_fd__peerchat;
 sockaddr_in g_peerchat_addr;
@@ -29,7 +30,7 @@ std::string g_our_ip;
 
 int init_peerchat_socket()
 {
-    // Create a UDP socket
+    // Create a socket
     if ((g_socket_fd__peerchat = socket(AF_INET, SOCK_STREAM, IPPROTO_IP)) == -1)
         return -1;
 
@@ -68,6 +69,7 @@ int init_peerchat_socket()
     {
         PROCESS_MESSAGE__ERROR("Could not bind or connect!");
         close(g_socket_fd__peerchat);
+        return 0;
     }
 
     PROCESS_MESSAGE__OK("Connected!");
@@ -197,15 +199,11 @@ void send_USER()
     // Encode our IP address to send it back
     auto enc_ip_addr = encode_inet_addr_to_string(inet_addr(g_our_ip.c_str()), 0);
 
-    // FIXME: GSProfileID is received on previous stage
-    //     using EAWebKit we can get field "profileId=<number>"
-    //     at the "TXN=NuLoginPersona" stage
-    //     >> For now we use constant, later I'll write correct code for it
     auto string = string_format("USER %s|%s 127.0.0.1 %s :%s\r\n"
                                 "NICK %s\r\n",
                                 // Here are parameters:
                                 string_format("X%sX", enc_ip_addr.c_str()).c_str(),
-                                RA3_ACCOUNT_GSID,
+                                nuloginpersona__profile_id__get().c_str(),
                                 RA3_STRING_SERVER_PEERCHAT_ORIGINAL,
                                 RA3_ACCOUNT_CDKEY,
                                 RA3_ACCOUNT_ID);
