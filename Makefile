@@ -4,6 +4,10 @@ TOOLCHAIN :=
 OUT_EXECUTABLE_NAME := ra3-net-client
 ARCH :=
 LIBS := -lpthread -lstdc++ -lcurl -lcurlpp
+INCLUDES := -Inana/include
+
+# Link Nana GUI
+LIBS += -Lnana/build/bin -lnana -lm -lX11 -lXft -lfontconfig -lstdc++fs
 
 # C++ files
 SOURCE_FILES := main.cpp
@@ -16,6 +20,7 @@ SOURCE_FILES += gpcm.cpp
 SOURCE_FILES += ra3_engine_tools/ra3_engine_tools.cpp
 SOURCE_FILES += ra3_engine_tools/md5.cpp
 SOURCE_FILES += client_info.cpp
+SOURCE_FILES += connection/connection.cpp
 
 # C files
 SOURCE_FILES += peerchat_encryption.c
@@ -37,7 +42,7 @@ SOURCE_FILES += DirtySDKEAWebKit/dirtynet.c
 SOURCE_FILES += DirtySDKEAWebKit/string_tools.c
 
 all:
-	$(TOOLCHAIN)$(CC) $(CFL) $(ARCH) $(SOURCE_FILES) $(LIBS) -o $(OUT_EXECUTABLE_NAME)
+	$(TOOLCHAIN)$(CC) $(CFL) $(ARCH) $(SOURCE_FILES) $(LIBS) $(INCLUDES) -o $(OUT_EXECUTABLE_NAME)
 
 clear:
 	rm -f *.o

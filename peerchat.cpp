@@ -205,7 +205,7 @@ void send_USER()
                                 string_format("X%sX", enc_ip_addr.c_str()).c_str(),
                                 nuloginpersona__profile_id__get().c_str(),
                                 RA3_STRING_SERVER_PEERCHAT_ORIGINAL,
-                                RA3_ACCOUNT_CDKEY,
+                                RA3_ACCOUNT_CDKEY_ENCODED,
                                 RA3_ACCOUNT_ID);
 
     int length = strlen(string.c_str());    // Important: WITHOUT null terminator!
@@ -213,6 +213,9 @@ void send_USER()
 
     send_buffer(buff, length);
     length = recv_buffer(buff, size);
+    buff[length] = '\0';
+
+    PROCESS_MESSAGE__OK("Received:\n%s", buff);
 }
 
 void send_QUIT()
@@ -234,6 +237,70 @@ void send_QUIT()
     length = recv_buffer(buff, size);
 }
 
+void send_CDKEY()
+{
+    if (!g_encrypted)
+        return;
+
+    PROCESS_MESSAGE__INFO("Sending CD-KEY...");
+
+    const int size = 2048;
+    uint8_t buff[size];
+    memset(buff, 0x00, size);
+
+    // Send CD-KEY
+    auto string = string_format("CDKEY %s\r\n", RA3_ACCOUNT_CDKEY);
+    int length = strlen(string.c_str());    // Important: WITHOUT null terminator!
+    memcpy(buff, string.c_str(), length);
+    send_buffer(buff, length);
+
+    // Receive result
+    length = recv_buffer(buff, size);
+    buff[length] = '\0';
+    auto res = std::string((char*)buff);
+    if (res.find("Authenticated") != res.npos)
+    {
+        if (res.find("PING") != res.npos)
+        {
+            PROCESS_MESSAGE__INFO("Got PING.");
+
+            // Send PONG
+            auto string = string_format("PONG :s\r\n");
+            int length = strlen(string.c_str());    // Important: WITHOUT null terminator!
+            memcpy(buff, string.c_str(), length);
+            send_buffer(buff, length);
+
+            PROCESS_MESSAGE__INFO("Sent PONG.");
+        }
+
+        PROCESS_MESSAGE__OK("Authenticated successfuly!");
+    }
+}
+
+void send_JOIN()
+{
+    if (!g_encrypted)
+        return;
+
+    PROCESS_MESSAGE__INFO("Joining...");
+
+    const int size = 2048;
+    uint8_t buff[size];
+    memset(buff, 0x00, size);
+
+    // Send JOIN request
+    auto string = string_format("JOIN %s\r\n", "#GPG!2166");
+    int length = strlen(string.c_str());    // Important: WITHOUT null terminator!
+    memcpy(buff, string.c_str(), length);
+    send_buffer(buff, length);
+
+    // Receive result
+    length = recv_buffer(buff, size);
+    buff[length] = '\0';
+    auto res = std::string((char*)buff);
+    PROCESS_MESSAGE__INFO("Received lobby info:\n%s", res.c_str());
+}
+
 void process_peerchat_connection()
 {
     init_peerchat_socket();
@@ -247,6 +314,12 @@ void process_peerchat_connection()
     // Send user info and get MOTD (Message of the Day) from server
     send_USER();
 
+    // Send CD-KEY and finally authenticate
+    send_CDKEY();
+
+    send_JOIN();
+
+    // Finish :)
     send_QUIT();
 
     PROCESS_MESSAGE__DEBUG("Done!");
