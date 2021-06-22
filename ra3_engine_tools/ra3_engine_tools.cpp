@@ -1,4 +1,8 @@
 #include <cstring>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <iterator>
 
 #include "ra3_engine_tools.h"
 #include "../client_info.h"
@@ -73,4 +77,13 @@ std::string get_gpcm_challenge_response_magic()
 std::string get_gpcm_challenge_response()
 {
     return md5(convert_to_hex_string(get_gpcm_challenge_response_magic()));
+}
+
+std::vector<std::string> split_string(std::string str)
+{
+    std::stringstream ss(str);
+    std::istream_iterator<std::string> begin(ss);
+    std::istream_iterator<std::string> end;
+    std::vector<std::string> vstrings(begin, end);
+    return vstrings;
 }

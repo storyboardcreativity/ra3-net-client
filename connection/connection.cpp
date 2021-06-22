@@ -11,7 +11,7 @@
 #include "../ra3_constants.h"
 #include "../gamespy.h"
 #include "../fesl.h"
-#include "../peerchat.h"
+#include "peerchat.h"
 #include "../gpcm.h"
 
 #include "connection.hpp"
