@@ -20,10 +20,97 @@
 
 #include "peerchat.hpp"
 
+struct peerchat_data_context
+{
+    std::vector<std::string> player_list;
+    std::string tx_key;
+    std::string rx_key;
+    std::string our_ip;
+};
+
 class peerchat_connection : public IPeerchatConnection
 {
+    int cmd_to_num(std::string command_code_fragment)
+    {
+        int result = -1;
+        try
+        {
+            result = std::stoi(command_code_fragment);
+        }
+        catch(const std::exception& e) {}
+        return result;
+    }
+
+    peerchat_data_context process_response(std::string response)
+    {
+        auto commands = split_string(response, "\r\n");
+
+        peerchat_data_context context;
+        for (auto it = commands.begin(); it != commands.end(); ++it)
+        {
+            auto &command = *it;
+            auto parts = split_string(command);
+
+            if (parts.size() < 2)
+                continue;
+
+            switch (cmd_to_num(parts[1]))
+            {
+            case 302: // our IP address
+            {
+                // Save IP string
+                context.our_ip = command.substr(12);
+                PROCESS_MESSAGE__INFO("Got our IP: %s", _our_ip.c_str());
+            }
+            break;
+
+            case 353: // player names list body
+            {
+                auto players = command.substr(command.find(" :") + 2);
+                context.player_list = split_string(players);
+            }
+            break;
+
+            case 705: // crypto keys
+            {
+                if (parts.size() != 5 || parts[2] != "*")
+                {
+                    PROCESS_MESSAGE__ERROR("Wrong response format!");
+                    break;
+                }
+
+                PROCESS_MESSAGE__OK("Successfuly received keys!");
+                PROCESS_MESSAGE__OK("TX Key: %s", parts[3].c_str());
+                PROCESS_MESSAGE__OK("RX Key: %s", parts[4].c_str());
+
+                context.tx_key = parts[3];
+                context.rx_key = parts[4];
+            }
+            break;
+
+            case 706: // auth ok
+            {
+                if (command.find("Authenticated") != command.npos)
+                {
+                    if (command.find("PING") != command.npos)
+                    {
+                        PROCESS_MESSAGE__INFO("Got PING.");
+
+                        send_PONG();
+                    }
+
+                    PROCESS_MESSAGE__OK("Authenticated successfuly!");
+                }
+            }
+            break;
+            }
+        }
+
+        return context;
+    }
+
 public:
-    peerchat_connection(ra3_client_info& client_info)
+    peerchat_connection(ra3_client_info &client_info)
         : _client_info(client_info) {}
 
     bool init()
@@ -89,20 +176,12 @@ public:
         length = recv_buffer(buff, size);
 
         // Split received string using space symbol
-        auto parts = split_string(std::string((char *)buff));
-        if (parts.size() != 5 || parts[0] != ":s" || parts[1] != "705" || parts[2] != "*")
-        {
-            PROCESS_MESSAGE__ERROR("Wrong response format!");
-            return;
-        }
-
-        PROCESS_MESSAGE__OK("Successfuly received keys!");
-        PROCESS_MESSAGE__OK("TX Key: %s", parts[3].c_str());
-        PROCESS_MESSAGE__OK("RX Key: %s", parts[4].c_str());
+        auto response = std::string((char *)buff);
+        auto context = process_response(response);
 
         PROCESS_MESSAGE__INFO("Initializing encryption context...");
-        gs_peerchat_init(&_peerchat_context__tx, (uint8_t *)parts[3].c_str(), (uint8_t *)RA3_STRING_PEERCHAT_SECRET_KEY);
-        gs_peerchat_init(&_peerchat_context__rx, (uint8_t *)parts[4].c_str(), (uint8_t *)RA3_STRING_PEERCHAT_SECRET_KEY);
+        gs_peerchat_init(&_peerchat_context__tx, (uint8_t *)context.tx_key.c_str(), (uint8_t *)RA3_STRING_PEERCHAT_SECRET_KEY);
+        gs_peerchat_init(&_peerchat_context__rx, (uint8_t *)context.rx_key.c_str(), (uint8_t *)RA3_STRING_PEERCHAT_SECRET_KEY);
         _encrypted = true;
         PROCESS_MESSAGE__OK("Done!");
     }
@@ -124,16 +203,7 @@ public:
 
         send_buffer(buff, length);
         length = recv_buffer(buff, size);
-
-        if (length != -1)
-        {
-            auto packet_text = std::string((char *)buff);
-
-            // We save IP string (we cut off packet header and last two symbols: '\r' and '\n')
-            _our_ip = packet_text.substr(12, packet_text.size() - 14);
-
-            PROCESS_MESSAGE__INFO("Got our IP: %s", _our_ip.c_str());
-        }
+        process_response(std::string((char *)buff));
     }
 
     void send_USER()
@@ -164,9 +234,7 @@ public:
 
         send_buffer(buff, length);
         length = recv_buffer(buff, size);
-        buff[length] = '\0';
-
-        PROCESS_MESSAGE__OK("Received:\n%s", buff);
+        process_response(std::string((char *)buff));
     }
 
     void send_CDKEY()
@@ -189,24 +257,22 @@ public:
         // Receive result
         length = recv_buffer(buff, size);
         buff[length] = '\0';
-        auto res = std::string((char *)buff);
-        if (res.find("Authenticated") != res.npos)
-        {
-            if (res.find("PING") != res.npos)
-            {
-                PROCESS_MESSAGE__INFO("Got PING.");
+        process_response(std::string((char *)buff));
+    }
 
-                // Send PONG
-                auto string = string_format("PONG :s\r\n");
-                int length = strlen(string.c_str()); // Important: WITHOUT null terminator!
-                memcpy(buff, string.c_str(), length);
-                send_buffer(buff, length);
+    void send_PONG()
+    {
+        const int size = 2048;
+        uint8_t buff[size];
+        memset(buff, 0x00, size);
 
-                PROCESS_MESSAGE__INFO("Sent PONG.");
-            }
+        // Send PONG
+        auto string = string_format("PONG :s\r\n");
+        int length = strlen(string.c_str()); // Important: WITHOUT null terminator!
+        memcpy(buff, string.c_str(), length);
+        send_buffer(buff, length);
 
-            PROCESS_MESSAGE__OK("Authenticated successfuly!");
-        }
+        PROCESS_MESSAGE__INFO("Sent PONG.");
     }
 
     std::vector<std::string> send_JOIN(std::string channel_name)
@@ -229,14 +295,8 @@ public:
         // Receive result
         length = recv_buffer(buff, size);
         buff[length] = '\0';
-        auto res = std::string((char *)buff);
-        PROCESS_MESSAGE__INFO("Received lobby info:\n%s", res.c_str());
-
-        auto off_353 = res.find("\r\n:s 353");
-        auto off_366 = res.find("\r\n:s 366");
-        auto subres_players = res.substr(off_353, off_366 - off_353);
-        subres_players = subres_players.substr(subres_players.find(channel_name) + channel_name.size() + 2);
-        return split_string(subres_players);
+        auto context = process_response(std::string((char *)buff));
+        return context.player_list;
     }
 
     void send_QUIT()
@@ -255,11 +315,15 @@ public:
         memcpy(buff, string.c_str(), length);
 
         send_buffer(buff, length);
+
+        // Receive result
         length = recv_buffer(buff, size);
+        buff[length] = '\0';
+        process_response(std::string((char *)buff));
     }
 
 private:
-    ra3_client_info& _client_info;
+    ra3_client_info &_client_info;
 
     int _socket_fd__peerchat;
     sockaddr_in _peerchat_addr;
@@ -309,7 +373,7 @@ private:
     }
 };
 
-IPeerchatConnection* process_peerchat_connection(ra3_client_info& client_info)
+IPeerchatConnection *process_peerchat_connection(ra3_client_info &client_info)
 {
     auto connection = new peerchat_connection(client_info);
 
