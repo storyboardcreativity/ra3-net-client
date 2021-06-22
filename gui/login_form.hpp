@@ -18,8 +18,6 @@ public:
     {
         caption(L"RA3 Client Login");
 
-        // pathboxes - boxes like {textbox button}
-        // consolebox - console group widget
         this->div("<><weight=80% vertical <><weight=70% vertical <vertical gap=10 textboxs arrange=[25,25,25]>  <weight=25 gap=10 buttons>><>><>");
 
         // "Login" textbox

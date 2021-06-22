@@ -14,8 +14,6 @@ public:
     {
         caption(L"RA3 Client Login");
 
-        // pathboxes - boxes like {textbox button}
-        // consolebox - console group widget
         this->div("<><weight=80% vertical <><weight=70% vertical <vertical gap=10 _label_status_text>  <weight=25 gap=10 _progress>><>><>");
 
         // Status text
