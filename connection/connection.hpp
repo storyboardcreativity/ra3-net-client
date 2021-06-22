@@ -3,6 +3,7 @@
 #include <mutex>
 
 #include "../fastdelegate/event.h"
+#include "peerchat.hpp"
 
 class connection_state_visitor
 {
@@ -23,6 +24,8 @@ public:
 
     DECLARE_EVENT(void, int) event_percent_changed;
     DECLARE_EVENT(void, std::string) event_stage_description_changed;
+
+    DECLARE_EVENT(void, IPeerchatConnection*) event_connection_established;
 
 private:
     std::mutex _mutex;

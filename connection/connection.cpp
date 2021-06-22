@@ -11,7 +11,7 @@
 #include "../ra3_constants.h"
 #include "../gamespy.h"
 #include "../fesl.h"
-#include "peerchat.h"
+#include "peerchat.hpp"
 #include "gpcm.h"
 
 #include "connection.hpp"
@@ -133,11 +133,12 @@ void process_connection(connection_state_visitor *visitor, std::string login, st
         visitor->change_stage_description("Processing peerchat connection...");
     }
 
-    process_peerchat_connection(client_info);
+    auto peerchat_connection = process_peerchat_connection(client_info);
 
     if (visitor)
     {
         visitor->change_percent(100);
         visitor->change_stage_description("Done!");
+        TRIGGER_EVENT(visitor->event_connection_established, peerchat_connection);
     }
 }

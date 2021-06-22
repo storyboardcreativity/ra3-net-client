@@ -17,9 +17,10 @@
 #include "../printing_tools.h"
 #include "../peerchat_encryption.h"
 #include "../ra3_engine_tools/ra3_engine_tools.h"
-#include "../client_info.hpp"
 
-class peerchat_connection
+#include "peerchat.hpp"
+
+class peerchat_connection : public IPeerchatConnection
 {
 public:
     peerchat_connection(ra3_client_info& client_info)
@@ -208,10 +209,10 @@ public:
         }
     }
 
-    void send_JOIN(std::string channel_name)
+    std::vector<std::string> send_JOIN(std::string channel_name)
     {
         if (!_encrypted)
-            return;
+            return std::vector<std::string>();
 
         PROCESS_MESSAGE__INFO("Joining...");
 
@@ -220,7 +221,7 @@ public:
         memset(buff, 0x00, size);
 
         // Send JOIN request
-        auto string = string_format("JOIN %s\r\n", channel_name);
+        auto string = string_format("JOIN %s\r\n", channel_name.c_str());
         int length = strlen(string.c_str()); // Important: WITHOUT null terminator!
         memcpy(buff, string.c_str(), length);
         send_buffer(buff, length);
@@ -230,6 +231,12 @@ public:
         buff[length] = '\0';
         auto res = std::string((char *)buff);
         PROCESS_MESSAGE__INFO("Received lobby info:\n%s", res.c_str());
+
+        auto off_353 = res.find("\r\n:s 353");
+        auto off_366 = res.find("\r\n:s 366");
+        auto subres_players = res.substr(off_353, off_366 - off_353);
+        subres_players = subres_players.substr(subres_players.find(channel_name) + channel_name.size() + 2);
+        return split_string(subres_players);
     }
 
     void send_QUIT()
@@ -302,28 +309,25 @@ private:
     }
 };
 
-void process_peerchat_connection(ra3_client_info& client_info)
+IPeerchatConnection* process_peerchat_connection(ra3_client_info& client_info)
 {
-    peerchat_connection connection(client_info);
+    auto connection = new peerchat_connection(client_info);
 
-    connection.init();
+    connection->init();
 
     // Get encryption keys from server
-    connection.send_CRYPT();
+    connection->send_CRYPT();
 
     // Get USeR IP
-    connection.send_USRIP();
+    connection->send_USRIP();
 
     // Send user info and get MOTD (Message of the Day) from server
-    connection.send_USER();
+    connection->send_USER();
 
     // Send CD-KEY and finally authenticate
-    connection.send_CDKEY();
-
-    connection.send_JOIN("#GPG!2166");
-
-    // Finish :)
-    connection.send_QUIT();
+    connection->send_CDKEY();
 
     PROCESS_MESSAGE__DEBUG("Done!");
+
+    return connection;
 }
