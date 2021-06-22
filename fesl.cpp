@@ -12,7 +12,7 @@
 // own headers
 #include "printing_macros.h"
 #include "ra3_constants.h"
-#include "client_info.h"
+#include "client_info.hpp"
 
 //
 #include "DirtySDKEAWebKit/socketapicallbacks.h"
@@ -133,7 +133,7 @@ void add_persona(ProtoSSLRefT *ref)
     PROCESS_MESSAGE__OK("Server sent us response:\n%s", response.c_str());
 }
 
-void login_persona(ProtoSSLRefT *ref)
+void login_persona(ra3_client_info& client_info, ProtoSSLRefT *ref)
 {
     PROCESS_MESSAGE__INFO("Processing login to persona...");
 
@@ -149,7 +149,7 @@ void login_persona(ProtoSSLRefT *ref)
     // Extract profileId from response
     auto profileId = response.substr(response.find("profileId=") + 10);
     PROCESS_MESSAGE__OK("Got profileId: %s", profileId.c_str());
-    nuloginpersona__profile_id__set(profileId);
+    client_info.nuloginpersona__profile_id__set(profileId);
 }
 
 void get_telemetry_token(ProtoSSLRefT *ref)
@@ -165,7 +165,7 @@ void get_telemetry_token(ProtoSSLRefT *ref)
     PROCESS_MESSAGE__OK("Server sent us response:\n%s", response.c_str());
 }
 
-void gamespy_pre_auth(ProtoSSLRefT *ref)
+void gamespy_pre_auth(ra3_client_info& client_info, ProtoSSLRefT *ref)
 {
     PROCESS_MESSAGE__INFO("Sending GameSpy pre-auth request...");
 
@@ -180,14 +180,14 @@ void gamespy_pre_auth(ProtoSSLRefT *ref)
     // Extract ticket from response
     auto ticket = response.substr(response.find("ticket=") + 7);
     PROCESS_MESSAGE__OK("Got pre-auth ticket: %s", ticket.c_str());
-    preauth__ticket__set(ticket);
+    client_info.preauth__ticket__set(ticket);
 
     // Extract challenge from response
     auto offsetA = response.find("challenge=") + 10;
     auto offsetB = response.find("\nticket=");
     auto challenge = response.substr(offsetA, offsetB - offsetA);
     PROCESS_MESSAGE__OK("Got pre-auth challenge: %s", challenge.c_str());
-    preauth__challenge__set(challenge);
+    client_info.preauth__challenge__set(challenge);
 }
 
 void process_ping(ProtoSSLRefT *ref)
@@ -206,7 +206,7 @@ void process_ping(ProtoSSLRefT *ref)
     }
 }
 
-void init_fesl_secure_connection()
+void init_fesl_secure_connection(ra3_client_info& client_info)
 {
     // Initialize API callbacks
     init_socket_api_callbacks();
@@ -242,13 +242,13 @@ void init_fesl_secure_connection()
     add_persona(sslref);
 
     // Login our persona
-    login_persona(sslref);
+    login_persona(client_info, sslref);
 
     // Get telemetry token
     get_telemetry_token(sslref);
 
     // Request GameSpy pre-auth
-    gamespy_pre_auth(sslref);
+    gamespy_pre_auth(client_info, sslref);
 
     //
     process_ping(sslref);

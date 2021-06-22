@@ -19,12 +19,15 @@ GPCM - GameSpy Connection Manager
 #include "../printing_macros.h"
 #include "../ra3_constants.h"
 #include "../printing_tools.h"
-#include "../client_info.h"
+#include "../client_info.hpp"
 #include "../ra3_engine_tools/ra3_engine_tools.h"
 
 class gpcm_connection
 {
 public:
+    gpcm_connection(ra3_client_info& client_info)
+        : _client_info(client_info) {}
+
     bool init()
     {
         // Create a socket
@@ -96,7 +99,7 @@ public:
         auto offsetA = packet.find("challenge\\") + 10;
         auto offsetB = packet.find("\\id");
         auto challenge = packet.substr(offsetA, offsetB - offsetA);
-        gpcm__initial_challenge__set(challenge);
+        _client_info.gpcm__initial_challenge__set(challenge);
         PROCESS_MESSAGE__INFO("Initial challenge => %s", challenge.c_str());
 
         PROCESS_MESSAGE__OK("Done!");
@@ -105,7 +108,7 @@ public:
     void send_login_challenge()
     {
         // FIXME: We use constant challenge because we don't have generating algorithm
-        gpcm__our_challenge__set("wN1sOMYBAX3pci0t1cbsxa7W8PvVbwnr");
+        _client_info.gpcm__our_challenge__set("wN1sOMYBAX3pci0t1cbsxa7W8PvVbwnr");
 
         auto string = string_format("\\"
                                     "login\\\\"
@@ -123,9 +126,9 @@ public:
                                     "id\\1\\"
                                     "final\\",
                                     // Parameters:
-                                    gpcm__our_challenge__get().c_str(),
-                                    preauth__ticket__get().c_str(),
-                                    get_gpcm_challenge_response().c_str(),
+                                    _client_info.gpcm__our_challenge__get().c_str(),
+                                    _client_info.preauth__ticket__get().c_str(),
+                                    get_gpcm_challenge_response(_client_info).c_str(),
                                     RA3_STRING_GAMENAME);
         int length = strlen(string.c_str()); // Important: WITHOUT null terminator!
 
@@ -149,6 +152,7 @@ public:
 private:
     int _socket_fd__gpcm;
     sockaddr_in _gpcm_addr;
+    ra3_client_info& _client_info;
 
     void send_gpcm_buffer(uint8_t *buff, uint32_t size)
     {
@@ -176,9 +180,9 @@ private:
     }
 };
 
-void process_gpcm_connection()
+void process_gpcm_connection(ra3_client_info& client_info)
 {
-    gpcm_connection connection;
+    gpcm_connection connection(client_info);
 
     connection.init();
 

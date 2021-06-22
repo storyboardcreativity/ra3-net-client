@@ -87,6 +87,8 @@ void process_download_step()
 
 void process_connection(connection_state_visitor *visitor, std::string login, std::string password, std::string id)
 {
+    ra3_client_info client_info;
+
     if (visitor)
     {
         visitor->change_percent(0);
@@ -115,7 +117,7 @@ void process_connection(connection_state_visitor *visitor, std::string login, st
         visitor->change_stage_description("Processing FESL secure connection...");
     }
 
-    init_fesl_secure_connection();
+    init_fesl_secure_connection(client_info);
 
     if (visitor)
     {
@@ -123,7 +125,7 @@ void process_connection(connection_state_visitor *visitor, std::string login, st
         visitor->change_stage_description("Processing GPCM connection...");
     }
 
-    process_gpcm_connection();
+    process_gpcm_connection(client_info);
 
     if (visitor)
     {
@@ -131,7 +133,7 @@ void process_connection(connection_state_visitor *visitor, std::string login, st
         visitor->change_stage_description("Processing peerchat connection...");
     }
 
-    process_peerchat_connection();
+    process_peerchat_connection(client_info);
 
     if (visitor)
     {

@@ -17,11 +17,14 @@
 #include "../printing_tools.h"
 #include "../peerchat_encryption.h"
 #include "../ra3_engine_tools/ra3_engine_tools.h"
-#include "../client_info.h"
+#include "../client_info.hpp"
 
 class peerchat_connection
 {
 public:
+    peerchat_connection(ra3_client_info& client_info)
+        : _client_info(client_info) {}
+
     bool init()
     {
         // Create a socket
@@ -150,7 +153,7 @@ public:
                                     "NICK %s\r\n",
                                     // Here are parameters:
                                     string_format("X%sX", enc_ip_addr.c_str()).c_str(),
-                                    nuloginpersona__profile_id__get().c_str(),
+                                    _client_info.nuloginpersona__profile_id__get().c_str(),
                                     RA3_STRING_SERVER_PEERCHAT_ORIGINAL,
                                     RA3_ACCOUNT_CDKEY_ENCODED,
                                     RA3_ACCOUNT_ID);
@@ -249,6 +252,8 @@ public:
     }
 
 private:
+    ra3_client_info& _client_info;
+
     int _socket_fd__peerchat;
     sockaddr_in _peerchat_addr;
 
@@ -297,9 +302,9 @@ private:
     }
 };
 
-void process_peerchat_connection()
+void process_peerchat_connection(ra3_client_info& client_info)
 {
-    peerchat_connection connection;
+    peerchat_connection connection(client_info);
 
     connection.init();
 

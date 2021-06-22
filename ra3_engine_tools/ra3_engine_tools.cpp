@@ -5,7 +5,7 @@
 #include <iterator>
 
 #include "ra3_engine_tools.h"
-#include "../client_info.h"
+#include "../client_info.hpp"
 
 std::string encode_inet_addr_to_string(uint32_t inet_address, bool dictionary_flag)
 {
@@ -64,19 +64,19 @@ std::string convert_to_hex_string(std::string str)
     return result;
 }
 
-std::string get_gpcm_challenge_response_magic()
+std::string get_gpcm_challenge_response_magic(ra3_client_info& client_info)
 {
-    return md5(convert_to_hex_string(preauth__challenge__get())) +
+    return md5(convert_to_hex_string(client_info.preauth__challenge__get())) +
            "                                                " +
-           preauth__ticket__get() +
-           gpcm__our_challenge__get() +
-           gpcm__initial_challenge__get() +
-           md5(convert_to_hex_string(preauth__challenge__get()));
+           client_info.preauth__ticket__get() +
+           client_info.gpcm__our_challenge__get() +
+           client_info.gpcm__initial_challenge__get() +
+           md5(convert_to_hex_string(client_info.preauth__challenge__get()));
 }
 
-std::string get_gpcm_challenge_response()
+std::string get_gpcm_challenge_response(ra3_client_info& client_info)
 {
-    return md5(convert_to_hex_string(get_gpcm_challenge_response_magic()));
+    return md5(convert_to_hex_string(get_gpcm_challenge_response_magic(client_info)));
 }
 
 std::vector<std::string> split_string(std::string str)
