@@ -1230,7 +1230,7 @@ static int32_t _ParseCertificate(X509CertificateT *pCert, const uint8_t *pData, 
     }
     if (iSize > (signed)(sizeof(pCert->SigData)+1))
     {
-        NetPrintf(("protossl: _ParseCertificate: signature data is too large (sig=%d, max=%d)\n", iSize-1, sizeof(pCert->SigData)));
+        NetPrintf(("protossl: _ParseCertificate: signature data is too large (sig=%d, max=%lu)\n", iSize-1, sizeof(pCert->SigData)));
         return(-21);
     }
     pCert->iSigSize = iSize-1;
@@ -1267,7 +1267,7 @@ static int32_t _ParseCertificate(X509CertificateT *pCert, const uint8_t *pData, 
 
         if ((unsigned)iKeyModSize > sizeof(pCert->KeyModData))
         {
-            NetPrintf(("protossl: _ParseCertificate: modulus data is too large (mod=%d, max=%d)\n", iKeyModSize, sizeof(pCert->KeyModData)));
+            NetPrintf(("protossl: _ParseCertificate: modulus data is too large (mod=%d, max=%lu)\n", iKeyModSize, sizeof(pCert->KeyModData)));
             return(-24);
         }
         pCert->iKeyModSize = iKeyModSize;
@@ -1292,7 +1292,7 @@ static int32_t _ParseCertificate(X509CertificateT *pCert, const uint8_t *pData, 
 
         if (iKeyExpSize > (signed)sizeof(pCert->KeyExpData))
         {
-            NetPrintf(("protossl: _ParseCertificate: exponent data is too large (exp=%d, max=%d)\n", iKeyExpSize, sizeof(pCert->KeyExpData)));
+            NetPrintf(("protossl: _ParseCertificate: exponent data is too large (exp=%d, max=%lu)\n", iKeyExpSize, sizeof(pCert->KeyExpData)));
             return(-26);
         }
         pCert->iKeyExpSize = iKeyExpSize;

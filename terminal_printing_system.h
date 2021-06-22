@@ -31,7 +31,7 @@ extern "C"
 void tps__print_log_string(tps__log_string_type_e type, const char* fmt, ...);
 
 // Function is thread-safe
-void tps__print_buffer(tps__log_string_type_e type, void* ptr, int size);
+void tps__print_buffer(tps__log_string_type_e type, const void* ptr, int size);
 
 #ifdef __cplusplus
 }

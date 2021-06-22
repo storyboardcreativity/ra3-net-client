@@ -5,9 +5,9 @@
 #include <stdarg.h>
 #include <errno.h>
 
-char *strnfcpy(char *dst, char *src, int size)
+char *strnfcpy(char *dst, const char *src, int size)
 {
-	char *dptr = dst, *sptr = src;
+	char *dptr = dst, *sptr = (char*)src;
 	int count = size;
 
 	while (count--)
@@ -16,7 +16,7 @@ char *strnfcpy(char *dst, char *src, int size)
 	return dst;
 }
 
-char *strnzcpy(char *dst, char *src, int size)
+char *strnzcpy(char *dst, const char *src, int size)
 {
 	if (size > 0) {
 		*dst = 0;
@@ -26,9 +26,9 @@ char *strnzcpy(char *dst, char *src, int size)
 	return dst;
 }
 
-char *strnzcat(char *dst, char *src, int size)
+char *strnzcat(char *dst, const char *src, int size)
 {
-	char *dptr = dst, *sptr = src;
+	char *dptr = dst, *sptr = (char*)src;
 	int count = size;
 
 	if (count) {
@@ -44,7 +44,7 @@ char *strnzcat(char *dst, char *src, int size)
 	return dst;
 }
 
-char *strlwr(char *s)
+char *strlwr(const char *s)
 {
 	unsigned char *ptr = (unsigned char *)s;
 
@@ -54,5 +54,5 @@ char *strlwr(char *s)
 	else
 		ptr++;
 
-	return s;
+	return (char*)s;
 }

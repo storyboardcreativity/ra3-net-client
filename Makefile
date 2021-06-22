@@ -1,5 +1,5 @@
 CC := gcc
-CFL := -ggdb -fPIC -Wmultichar
+CFL := -ggdb -fPIC -Wmultichar -Wno-multichar -Wno-literal-suffix
 TOOLCHAIN :=
 OUT_EXECUTABLE_NAME := ra3-net-client
 ARCH :=

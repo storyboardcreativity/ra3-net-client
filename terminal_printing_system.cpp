@@ -11,7 +11,7 @@
 
 pthread_mutex_t g_terminal_printing_system__screen_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
-std::vector<std::string> convert_buffer_to_printable_strings(void* ptr, int size)
+std::vector<std::string> convert_buffer_to_printable_strings(const void* ptr, int size)
 {
     const int symbols_cnt = 16;
 
@@ -109,7 +109,7 @@ extern "C" void tps__print_log_string(tps__log_string_type_e type, const char* f
     pthread_mutex_unlock(&g_terminal_printing_system__screen_mutex);
 }
 
-extern "C" void tps__print_buffer(tps__log_string_type_e type, void* ptr, int size)
+extern "C" void tps__print_buffer(tps__log_string_type_e type, const void* ptr, int size)
 {
     if (size < 0)
         return;

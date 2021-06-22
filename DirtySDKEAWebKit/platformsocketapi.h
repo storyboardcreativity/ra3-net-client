@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#elif defined(_WIN32)
 	//http://msdn.microsoft.com/en-us/library/ms741394(VS.85).aspx 
 	//typedef int socklen_t;
-	typedef int platform_ssize_t;
+	typedef ssize_t platform_ssize_t;
 //#endif
 
 #include <bits/socket.h>
@@ -72,9 +72,9 @@ enum ePlatformSocketError
 };
 
 typedef int					(*PLATFORM_ACCEPT)			(int, struct sockaddr*, socklen_t*);
-typedef int					(*PLATFORM_BIND)			(int, struct sockaddr*, socklen_t);
-typedef int					(*PLATFORM_CONNECT)			(int, struct sockaddr*, socklen_t);
-typedef struct hostent*		(*PLATFORM_GETHOSTBYADDR)	(const char*,	socklen_t, int);
+typedef int					(*PLATFORM_BIND)			(int, const struct sockaddr*, socklen_t);
+typedef int					(*PLATFORM_CONNECT)			(int, const struct sockaddr*, socklen_t);
+typedef struct hostent*		(*PLATFORM_GETHOSTBYADDR)	(const void*,	socklen_t, int);
 typedef struct hostent*		(*PLATFORM_GETHOSTBYNAME)	(const char*);
 typedef int					(*PLATFORM_DNSLOOKUP)		(const char*, void*, void**, unsigned int*);
 typedef int					(*PLATFORM_GETPEERNAME)		(int,struct sockaddr*, socklen_t*); 
@@ -97,14 +97,14 @@ typedef int					(*PLATFORM_LISTEN)			(int, int);
 typedef platform_ssize_t	(*PLATFORM_RECV)			(int, void*, size_t, int);
 typedef platform_ssize_t	(*PLATFORM_RECVFROM)		(int, void*, size_t, int, struct sockaddr*, socklen_t*);
 //typedef platform_ssize_t	(*PLATFORM_RECVMSG)			(int, struct msghdr*, int);
-typedef platform_ssize_t	(*PLATFORM_SEND)			(int, void*, size_t, int);
+typedef platform_ssize_t	(*PLATFORM_SEND)			(int, const void*, size_t, int);
 //typedef platform_ssize_t	(*PLATFORM_SENDMSG)			(int, const struct msghdr*, int);
-typedef platform_ssize_t	(*PLATFORM_SENDTO)			(int, void*, size_t, int, struct sockaddr*, socklen_t);
-typedef int					(*PLATFORM_SETSOCKOPT)		(int, int, int, void*, socklen_t);
+typedef platform_ssize_t	(*PLATFORM_SENDTO)			(int, const void*, size_t, int, const struct sockaddr*, socklen_t);
+typedef int					(*PLATFORM_SETSOCKOPT)		(int, int, int, const void*, socklen_t);
 typedef int					(*PLATFORM_SHUTDOWN)		(int, int);
 typedef int					(*PLATFORM_SOCKET)			(int, int, int);
 typedef int					(*PLATFORM_CLOSE)			(int);
-typedef int					(*PLATFORM_POLL)			(struct pollfd*, int, int);
+typedef int					(*PLATFORM_POLL)			(struct pollfd*, long unsigned int, int);
 //typedef int				(*PLATFORM_SELECT)(int, struct fd_set*, struct fd_set*, struct fd_set*, struct timeval*);
 typedef int					(*PLATFORM_GETLASTERROR)	(int);
 

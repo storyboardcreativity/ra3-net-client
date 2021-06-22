@@ -59,6 +59,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "system_types.h"
 
+#include "string_tools.h"
+
 /*** Defines **********************************************************************/
 
 #define INVALID_SOCKET      (-1)

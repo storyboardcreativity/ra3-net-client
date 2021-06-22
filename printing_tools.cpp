@@ -24,6 +24,18 @@ int vasprintf(char **strp, const char *fmt, va_list ap)
     return vsnprintf(buffer, size, fmt, ap);
 }
 
+int asprintf(char **strp, const char *fmt, ...)
+{
+    int error;
+    va_list ap;
+
+    va_start(ap, fmt);
+    error = vasprintf(strp, fmt, ap);
+    va_end(ap);
+
+    return error;
+}
+
 std::string string_format(const char *fmt, ...)
 {
     char *ret;

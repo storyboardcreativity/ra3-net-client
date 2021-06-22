@@ -6,12 +6,14 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "platformsocketapi.h"
 #include "system_types.h"
 #include "../printing_macros.h"
 
-void getlasterror(int code)
+int getlasterror(int code)
 {
     if (code < 0)
     {
@@ -43,10 +45,11 @@ void getlasterror(int code)
     return code;
 }
 
-void dnslookup(const char *hostname, void *unk, void **unk_sema, unsigned int *unk_addr)
+int dnslookup(const char *hostname, void *unk, void **unk_sema, unsigned int *unk_addr)
 {
     printf("dnslookup() is not implemented! Exiting.\n");
     exit(-1);
+    return -1;
 }
 
 int setsockopt_wrapper(int fd, int level, int optname, const void *optval, socklen_t optlen)
