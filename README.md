@@ -1,5 +1,7 @@
 ## ra3-net-client - Red Alert 3 network client
 
+You can support me here: https://ko-fi.com/storyboardcreativity
+
 ### Building
 
 You need `libcurl-dev` and `libcurlpp-dev` to build this.
