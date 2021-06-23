@@ -51,6 +51,14 @@ public:
             _listbox_player_list.at(0).append(*it);
     }
 
+    void set_lobby_list(std::vector<std::string>& lobbies)
+    {
+        _listbox_player_list.clear();
+        _combobox_lobbies.clear();
+        for (auto it = lobbies.begin(); it != lobbies.end(); ++it)
+            _combobox_lobbies.push_back(*it);
+    }
+
     // ========================== Events ==========================
 
     DECLARE_EVENT(void, std::string lobby_name) event_lobby_changed;

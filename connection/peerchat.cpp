@@ -206,7 +206,7 @@ public:
         process_response(std::string((char *)buff));
     }
 
-    void send_USER()
+    void send_USER(std::string id)
     {
         if (!_encrypted)
             return;
@@ -227,7 +227,7 @@ public:
                                     _client_info.nuloginpersona__profile_id__get().c_str(),
                                     RA3_STRING_SERVER_PEERCHAT_ORIGINAL,
                                     RA3_ACCOUNT_CDKEY_ENCODED,
-                                    RA3_ACCOUNT_ID);
+                                    id.c_str());
 
         int length = strlen(string.c_str()); // Important: WITHOUT null terminator!
         memcpy(buff, string.c_str(), length);
@@ -373,7 +373,7 @@ private:
     }
 };
 
-IPeerchatConnection *process_peerchat_connection(ra3_client_info &client_info)
+IPeerchatConnection *process_peerchat_connection(ra3_client_info &client_info, std::string id)
 {
     auto connection = new peerchat_connection(client_info);
 
@@ -386,7 +386,7 @@ IPeerchatConnection *process_peerchat_connection(ra3_client_info &client_info)
     connection->send_USRIP();
 
     // Send user info and get MOTD (Message of the Day) from server
-    connection->send_USER();
+    connection->send_USER(id);
 
     // Send CD-KEY and finally authenticate
     connection->send_CDKEY();

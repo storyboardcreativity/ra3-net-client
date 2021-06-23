@@ -88,17 +88,18 @@ void send_client_hello(ProtoSSLRefT *ref)
     fesl_send(ref, 'fsys', 0x00000080, memcheck_string);
 }
 
-void send_login_info(ProtoSSLRefT *ref)
+void send_login_info(ProtoSSLRefT *ref, std::string email, std::string password)
 {
     PROCESS_MESSAGE__INFO("Logging in...");
 
     // Send login request
-    auto login_string = "TXN=NuLogin\n"
-                        "returnEncryptedInfo=1\n"
-                        "nuid="RA3_ACCOUNT_EMAIL"\n"                // << here is our username
-                        "password="RA3_ACCOUNT_PASSWORD"\n"         // << here is out password
-                        "macAddr=$cccccccccccc\n";  // for some reason this field is filled with 'c'
-    fesl_send(ref, 'acct', 0x020000C0, login_string);
+    auto login_string = string_format("TXN=NuLogin\n"
+                                      "returnEncryptedInfo=1\n"
+                                      "nuid=%s\n"                // << here is our username
+                                      "password=%s\n"         // << here is out password
+                                      "macAddr=$cccccccccccc\n",  // for some reason this field is filled with 'c');
+                                      email.c_str(), password.c_str());
+    fesl_send(ref, 'acct', 0x020000C0, login_string.c_str());
 
     // Wait for response from server
     auto response = fesl_recv(ref);
@@ -119,28 +120,28 @@ void get_personas(ProtoSSLRefT *ref)
     PROCESS_MESSAGE__OK("Server sent us personas list:\n%s", response.c_str());
 }
 
-void add_persona(ProtoSSLRefT *ref)
+void add_persona(ProtoSSLRefT *ref, std::string account_id)
 {
     PROCESS_MESSAGE__INFO("Adding persona to account...");
 
     // Send request
-    auto add_persona_request_string = "TXN=NuAddPersona\n"
-                                      "name="RA3_ACCOUNT_ID"\n";
-    fesl_send(ref, 'acct', 0x040000C0, add_persona_request_string);
+    auto add_persona_request_string = string_format("TXN=NuAddPersona\n"
+                                                    "name=%s\n", account_id.c_str());
+    fesl_send(ref, 'acct', 0x040000C0, add_persona_request_string.c_str());
 
     // Wait for response from server
     auto response = fesl_recv(ref);
     PROCESS_MESSAGE__OK("Server sent us response:\n%s", response.c_str());
 }
 
-void login_persona(ra3_client_info& client_info, ProtoSSLRefT *ref)
+void login_persona(ra3_client_info& client_info, ProtoSSLRefT *ref, std::string account_id)
 {
     PROCESS_MESSAGE__INFO("Processing login to persona...");
 
     // Send request
-    auto login_persona_request_string = "TXN=NuLoginPersona\n"
-                                        "name="RA3_ACCOUNT_ID"\n";
-    fesl_send(ref, 'acct', 0x060000C0, login_persona_request_string);
+    auto login_persona_request_string = string_format("TXN=NuLoginPersona\n"
+                                                      "name=%s\n", account_id.c_str());
+    fesl_send(ref, 'acct', 0x060000C0, login_persona_request_string.c_str());
 
     // Wait for response from server
     auto response = fesl_recv(ref);
@@ -206,7 +207,7 @@ void process_ping(ProtoSSLRefT *ref)
     }
 }
 
-void init_fesl_secure_connection(ra3_client_info& client_info)
+void init_fesl_secure_connection(ra3_client_info& client_info, std::string login, std::string password, std::string id)
 {
     // Initialize API callbacks
     init_socket_api_callbacks();
@@ -233,16 +234,16 @@ void init_fesl_secure_connection(ra3_client_info& client_info)
     send_client_hello(sslref);
 
     // Try to login
-    send_login_info(sslref);
+    send_login_info(sslref, login, password);
 
     // Get names list of our account
     get_personas(sslref);
 
     // Add our persona to account
-    add_persona(sslref);
+    add_persona(sslref, id);
 
     // Login our persona
-    login_persona(client_info, sslref);
+    login_persona(client_info, sslref, id);
 
     // Get telemetry token
     get_telemetry_token(sslref);

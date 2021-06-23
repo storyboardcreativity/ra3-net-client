@@ -117,7 +117,7 @@ void process_connection(connection_state_visitor *visitor, std::string login, st
         visitor->change_stage_description("Processing FESL secure connection...");
     }
 
-    init_fesl_secure_connection(client_info);
+    init_fesl_secure_connection(client_info, login, password, id);
 
     if (visitor)
     {
@@ -133,7 +133,7 @@ void process_connection(connection_state_visitor *visitor, std::string login, st
         visitor->change_stage_description("Processing peerchat connection...");
     }
 
-    auto peerchat_connection = process_peerchat_connection(client_info);
+    auto peerchat_connection = process_peerchat_connection(client_info, id);
 
     if (visitor)
     {

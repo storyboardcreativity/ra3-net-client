@@ -20,6 +20,7 @@ SOURCE_FILES += connection/gpcm.cpp
 SOURCE_FILES += ra3_engine_tools/ra3_engine_tools.cpp
 SOURCE_FILES += ra3_engine_tools/md5.cpp
 SOURCE_FILES += connection/connection.cpp
+SOURCE_FILES += auth_info.cpp
 
 # C files
 SOURCE_FILES += peerchat_encryption.c
