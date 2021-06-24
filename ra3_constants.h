@@ -35,5 +35,5 @@
 
 // RA3 login info
 
-#define RA3_ACCOUNT_EMAIL "example@example.com"
-#define RA3_ACCOUNT_PASSWORD "example_password"
+#define RA3_ACCOUNT_CDKEY "AAAA-BBBB-CCCC-DDDD-EEEE"
+#define RA3_ACCOUNT_CDKEY_ENCODED "12345678901234567890123456789012"
