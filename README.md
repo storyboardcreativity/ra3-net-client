@@ -18,3 +18,6 @@ https://github.com/derkalle4/gamespy-stuff/blob/master/peerchat-packets.txt
 
 GS peerchat encryption/decryption algorithm:
 https://aluigi.altervista.org/papers/gs_peerchat.h
+
+GS enctypeX encryption/decryption algorithm:
+http://aluigi.altervista.org/papers/enctypex_decoder.c

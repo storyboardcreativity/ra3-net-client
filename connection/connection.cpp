@@ -13,6 +13,7 @@
 #include "../fesl.h"
 #include "peerchat.hpp"
 #include "gpcm.h"
+#include "master_server.h"
 
 #include "connection.hpp"
 
@@ -134,6 +135,14 @@ void process_connection(connection_state_visitor *visitor, std::string login, st
     }
 
     auto peerchat_connection = process_peerchat_connection(client_info, id);
+
+    if (visitor)
+    {
+        visitor->change_percent(80);
+        visitor->change_stage_description("Processing master-server connection...");
+    }
+
+    auto ms_connection = process_ms_connection(client_info);
 
     if (visitor)
     {

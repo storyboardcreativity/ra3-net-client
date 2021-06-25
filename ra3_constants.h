@@ -29,6 +29,10 @@
 #define RA3_STRING_SERVER_GPCM "gpcm.server.cnc-online.net"
 #define RA3_STRING_SERVER_GPCM_PORT 29900
 
+#define RA3_STRING_SERVER_MASTER_ORIGINAL "redalert3pc.ms1.gamespy.com"
+#define RA3_STRING_SERVER_MASTER "master.server.cnc-online.net"
+#define RA3_STRING_SERVER_MASTER_PORT 28910
+
 // RA3 paths
 
 #define RA3_STRING_LIVESUITE_PATH "u/f/eagames/redalert3/patches/livesite"
