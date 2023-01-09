@@ -2060,7 +2060,6 @@ void ProtoSSLUpdate(ProtoSSLRefT *pState)
     // FIXME: Without this sleep it does not work! (SocketInfo result will be 0)
     usleep(100000);
 
-
     if (pState->iState == ST_WAIT)
     {
         iResult = SocketInfo(pState->pSock, 'stat', 0, NULL, 0);

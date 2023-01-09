@@ -120,7 +120,13 @@ void process_connection(connection_state_visitor *visitor, std::string login, st
         visitor->change_stage_description("Processing FESL secure connection...");
     }
 
-    init_fesl_secure_connection(client_info, login, password, id);
+	if (!init_fesl_secure_connection(client_info, login, password, id))
+	{
+		visitor->change_percent(0);
+		visitor->change_stage_description("Failed!");
+		TRIGGER_EVENT(visitor->event_connection_failed, "Could not initialize FESL secure connection!");
+		return;
+	}
 
     if (visitor)
     {

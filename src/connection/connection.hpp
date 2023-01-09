@@ -25,7 +25,8 @@ public:
     DECLARE_EVENT(void, int) event_percent_changed;
     DECLARE_EVENT(void, std::string) event_stage_description_changed;
 
-    DECLARE_EVENT(void, IPeerchatConnection*) event_connection_established;
+	DECLARE_EVENT(void, IPeerchatConnection*) event_connection_established;
+	DECLARE_EVENT(void, std::string) event_connection_failed;
 
 private:
     std::mutex _mutex;

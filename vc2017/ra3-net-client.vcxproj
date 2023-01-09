@@ -170,7 +170,7 @@ xcopy /e /k /h /i /y $(SolutionDir)..\res $(SolutionDir)..\build\res\</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)..\nana\build\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>nana_$(PlatformToolset)_$(Configuration)_$(PlatformTarget).lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nana_$(PlatformToolset)_$(Configuration)_$(PlatformTarget).lib;Ws2_32.lib;$(SolutionDir)packages\pthreads.2.9.1.4\build\native\lib\v110\Win32\Debug\dynamic\cdecl\libpthread.lib;$(SolutionDir)packages\curl.7.30.0.2\build\native\lib\v110\Win32\Debug\dynamic\libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -201,7 +201,7 @@ xcopy /e /k /h /i /y $(SolutionDir)..\res $(SolutionDir)..\build\res\</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)..\nana\build\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>nana_$(PlatformToolset)_$(Configuration)_$(PlatformTarget).lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nana_$(PlatformToolset)_$(Configuration)_$(PlatformTarget).lib;Ws2_32.lib;$(SolutionDir)packages\pthreads.2.9.1.4\build\native\lib\v110\x64\Debug\dynamic\cdecl\libpthread.lib;$(SolutionDir)packages\curl.7.30.0.2\build\native\lib\v110\x64\Debug\dynamic\libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -222,7 +222,7 @@ xcopy /e /k /h /i /y $(SolutionDir)..\res $(SolutionDir)..\build\res\</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)..\nana\build\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>nana_$(PlatformToolset)_$(Configuration)_$(PlatformTarget).lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nana_$(PlatformToolset)_$(Configuration)_$(PlatformTarget).lib;Ws2_32.lib;$(SolutionDir)packages\pthreads.2.9.1.4\build\native\lib\v110\Win32\Release\dynamic\cdecl\libpthread.lib;$(SolutionDir)packages\curl.7.30.0.2\build\native\lib\v110\Win32\Release\dynamic\libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <PreBuildEvent>
@@ -257,7 +257,7 @@ xcopy /e /k /h /i /y $(SolutionDir)..\res $(SolutionDir)..\build\res\</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)..\nana\build\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>nana_$(PlatformToolset)_$(Configuration)_$(PlatformTarget).lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nana_$(PlatformToolset)_$(Configuration)_$(PlatformTarget).lib;Ws2_32.lib;$(SolutionDir)packages\pthreads.2.9.1.4\build\native\lib\v110\x64\Release\dynamic\cdecl\libpthread.lib;$(SolutionDir)packages\curl.7.30.0.2\build\native\lib\v110\x64\Release\dynamic\libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <PreBuildEvent>

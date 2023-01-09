@@ -943,14 +943,28 @@ int32_t SocketInfo(SocketT *pSocket, int32_t iInfo, int32_t iData, void *pBuf, i
         // if not connected, use select to determine connect
         if (pSocket->opened == 0)
         {
-            
             struct pollfd PollFd;
         
             memset(&PollFd, 0, sizeof(PollFd));
             PollFd.fd = pSocket->socket;
-            PollFd.events = POLLOUT|POLLERR;
-            if (gPlatformSocketAPICallbacks.poll(&PollFd, 1, 0) != 0)
+
+#ifdef _MSC_VER
+			PollFd.events = POLLOUT;	// WSAPoll does not handle POLLERR and returns SOCKET_ERROR for this flag
+#elif __linux__
+			PollFd.events = POLLOUT | POLLERR;
+#else
+#error Unknown OS!
+#endif
+			
+			auto res_poll = gPlatformSocketAPICallbacks.poll(&PollFd, 1, 0);
+            if (res_poll != 0)
             {
+				if (res_poll == SOCKET_ERROR)
+				{
+					NetPrintf(("dirtynetps3: poll returned SOCKET_ERROR\n"));
+					pSocket->opened = -1;
+				}
+
                 // if we got an exception, that means connect failed
                 if (PollFd.revents & POLLERR)
                 {

@@ -32,7 +32,15 @@ int getlasterror(int code)
 {
     if (code < 0)
     {
-        switch (errno)
+#ifdef _MSC_VER
+		auto err = WSAGetLastError();
+#elif __linux__
+		auto err = errno;
+#else
+#error Unknown OS!
+#endif
+
+        switch (err)
         {
         case 10035:
         case 997:
@@ -52,7 +60,7 @@ int getlasterror(int code)
             code = -11;
             break;
         default:
-            code = errno != 10054 ? -7 : -13;
+            code = err != 10054 ? -7 : -13;
             break;
         }
     }
@@ -209,5 +217,5 @@ void init_socket_api_callbacks()
 
 #endif
 
-    callbacks->getlasterror = getlasterror;
+	callbacks->getlasterror = getlasterror;
 }

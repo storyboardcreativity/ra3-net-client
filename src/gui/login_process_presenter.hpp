@@ -28,12 +28,18 @@ public:
         _ra3online_form.chat_lobbies_control().event_lobby_changed +=
             MakeDelegate(this, &login_process_presenter::on_chat_lobbies_control_lobby_select);
         
-        _conn_state_visitor.event_connection_established +=
-            MakeDelegate(this, &login_process_presenter::on_connection_established);
+		_conn_state_visitor.event_connection_established +=
+			MakeDelegate(this, &login_process_presenter::on_connection_established);
+
+		_conn_state_visitor.event_connection_failed +=
+			MakeDelegate(this, &login_process_presenter::on_connection_failed);
     }
 
     ~login_process_presenter()
     {
+		_conn_state_visitor.event_connection_failed -=
+			MakeDelegate(this, &login_process_presenter::on_connection_failed);
+
         _conn_state_visitor.event_connection_established -=
             MakeDelegate(this, &login_process_presenter::on_connection_established);
 
@@ -73,7 +79,7 @@ private:
         _auth_info.pseudonym_set(_login_form.pseudonym_get());
         save_auth_info(_auth_info);
 
-        _login_form.enabled(false);
+        //_login_form.enabled(false);
         _login_process_form.show();
         _conn_thread = std::thread(process_connection, &_conn_state_visitor,
             _login_form.login_get(),
@@ -95,6 +101,11 @@ private:
         _login_process_form.close();
         _ra3online_form.show();
     }
+
+	void on_connection_failed(std::string reason)
+	{
+		_login_process_form.close();
+	}
 
     void _prepare_lobbies()
     {

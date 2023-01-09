@@ -31,7 +31,7 @@
 #include "DirtySDKEAWebKit/protossl.h"
 #include "DirtySDKEAWebKit/dirtynet.h"
 
-void fesl_send(ProtoSSLRefT *ref, uint32_t type, uint32_t magic, const char *str)
+int32_t fesl_send(ProtoSSLRefT *ref, uint32_t type, uint32_t magic, const char *str)
 {
     // === HEADER ===
     // [4 bytes (Big Endian)] - header (packet type)
@@ -51,9 +51,11 @@ void fesl_send(ProtoSSLRefT *ref, uint32_t type, uint32_t magic, const char *str
     PROCESS_MESSAGE__DEBUG("Sending data:");
     PROCESS_BUFMESSAGE__DEBUG(data, size);
 
-    ProtoSSLSend(ref, (const char *)data, size);
+    auto res = ProtoSSLSend(ref, (const char *)data, size);
 
     delete[] data;
+
+	return res;
 }
 
 std::string fesl_recv(ProtoSSLRefT *ref)
@@ -66,10 +68,13 @@ std::string fesl_recv(ProtoSSLRefT *ref)
     PROCESS_MESSAGE__DEBUG("Received data:");
     PROCESS_BUFMESSAGE__DEBUG(data, sz);
 
+	if (sz < 13)
+		return "";
+
     return std::string((char*)&data[12]);
 }
 
-void send_client_hello(ProtoSSLRefT *ref)
+bool send_client_hello(ProtoSSLRefT *ref)
 {
     PROCESS_MESSAGE__INFO("Sending \"HELLO\" to server...");
 
@@ -84,7 +89,13 @@ void send_client_hello(ProtoSSLRefT *ref)
                         "protocolVersion=2.0\n"
                         "fragmentSize=8096\n"
                         "clientType=\n"; // for some reason "clientType" field is empty
-    fesl_send(ref, 'fsys', 0xC0000001, hello_string);
+
+	auto status = fesl_send(ref, 'fsys', 0xC0000001, hello_string);
+	if (status < 0)
+	{
+		PROCESS_MESSAGE__ERROR("Could not send!");
+		return false;
+	}
 
     // Wait for response (standard list with parameters)
     auto response = fesl_recv(ref);
@@ -97,10 +108,17 @@ void send_client_hello(ProtoSSLRefT *ref)
     // Imitate memcheck stage
     auto memcheck_string = "TXN=MemCheck\n"
                            "result=\n"; // for some reason "result" field is empty
-    fesl_send(ref, 'fsys', 0x00000080, memcheck_string);
+	status = fesl_send(ref, 'fsys', 0x00000080, memcheck_string);
+	if (status < 0)
+	{
+		PROCESS_MESSAGE__ERROR("Could not send!");
+		return false;
+	}
+
+	return true;
 }
 
-void send_login_info(ProtoSSLRefT *ref, std::string email, std::string password)
+bool send_login_info(ProtoSSLRefT *ref, std::string email, std::string password)
 {
     PROCESS_MESSAGE__INFO("Logging in...");
 
@@ -111,11 +129,18 @@ void send_login_info(ProtoSSLRefT *ref, std::string email, std::string password)
                                       "password=%s\n"         // << here is out password
                                       "macAddr=$cccccccccccc\n",  // for some reason this field is filled with 'c');
                                       email.c_str(), password.c_str());
-    fesl_send(ref, 'acct', 0x020000C0, login_string.c_str());
+    auto status = fesl_send(ref, 'acct', 0x020000C0, login_string.c_str());
+	if (status < 0)
+	{
+		PROCESS_MESSAGE__ERROR("Could not send!");
+		return false;
+	}
 
     // Wait for response from server
     auto response = fesl_recv(ref);
     PROCESS_MESSAGE__OK("Server sent us login response:\n%s", response.c_str());
+
+	return true;
 }
 
 void get_personas(ProtoSSLRefT *ref)
@@ -219,7 +244,7 @@ void process_ping(ProtoSSLRefT *ref)
     }
 }
 
-void init_fesl_secure_connection(ra3_client_info& client_info, std::string login, std::string password, std::string id)
+bool init_fesl_secure_connection(ra3_client_info& client_info, std::string login, std::string password, std::string id)
 {
     // Initialize API callbacks
     init_socket_api_callbacks();
@@ -237,16 +262,20 @@ void init_fesl_secure_connection(ra3_client_info& client_info, std::string login
     ProtoSSLControl(sslref, 'ncrt', 1, 0, nullptr);
 
     // Prepare connection
-    ProtoSSLConnect(sslref, 1, RA3_STRING_SERVER_FESL_ORIGINAL, 0, RA3_STRING_SERVER_FESL_PORT);
+    auto res_conn = ProtoSSLConnect(sslref, 1, RA3_STRING_SERVER_FESL_ORIGINAL, 0, RA3_STRING_SERVER_FESL_PORT);
+	if (res_conn != SOCKERR_NONE)
+		return false;
 
     // Update (we connect here and make secure handshake)
     ProtoSSLUpdate(sslref);
 
     // Process client hello to RA3 server
-    send_client_hello(sslref);
+	if (!send_client_hello(sslref))
+		return false;
 
     // Try to login
-    send_login_info(sslref, login, password);
+	if (!send_login_info(sslref, login, password))
+		return false;
 
     // Get names list of our account
     get_personas(sslref);
@@ -267,4 +296,5 @@ void init_fesl_secure_connection(ra3_client_info& client_info, std::string login
     process_ping(sslref);
 
     PROCESS_MESSAGE__DEBUG("Done!");
+	return true;
 }
