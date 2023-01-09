@@ -46,12 +46,29 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <string.h>
 
+// OS-specific
+#ifdef _MSC_VER
+
+#include "unistd_windows.h"
+#include <WinSock2.h>
+#define SHUT_WR SD_SEND
+#define SHUT_RD SD_RECEIVE
+#define SHUT_RDWR SD_BOTH
+
+#elif __linux__
+
 #include <sys/poll.h> 
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h> 
 #include <netdb.h>
+
+#else
+
+#error Unknown OS!
+
+#endif
 
 #include "dirtysock.h"
 #include "dirtyvers.h"

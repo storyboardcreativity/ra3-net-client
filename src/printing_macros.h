@@ -1,6 +1,22 @@
 #pragma once
+
+// OS-specific
+#ifdef _MSC_VER
+
+#include <windows.h>
+#define SYS_GETTID() GetCurrentThreadId()
+
+#elif __linux__
+
 #include <unistd.h>
 #include <sys/syscall.h>
+#define SYS_GETTID() syscall(SYS_gettid)
+
+#else
+
+#error Unknown OS!
+
+#endif
 
 #include "terminal_printing_system.h"
 #include "printing_tools.h"
@@ -9,7 +25,7 @@
     {                                                                                                                   \
         char *buff_ptr;                                                                                                 \
         asprintf(&buff_ptr, __VA_ARGS__);                                                                               \
-        tps__print_log_string(level, "[tid #%d] %s:%d\t\t|>>>| %s", syscall(SYS_gettid), __FILE__, __LINE__, buff_ptr); \
+        tps__print_log_string(level, "[tid #%d] %s:%d\t\t|>>>| %s", SYS_GETTID(), __FILE__, __LINE__, buff_ptr); \
         free(buff_ptr);                                                                                                 \
     }
 

@@ -373,6 +373,26 @@ static ProtoSSLCACertT _ProtoSSL_CACerts[] =
 
 /*** Private functions ******************************************************/
 
+#ifdef _MSC_VER
+
+#include <windows.h>
+
+void usleep(__int64 usec)
+{
+	HANDLE timer;
+	LARGE_INTEGER ft;
+
+	ft.QuadPart = -(10 * usec); // Convert to 100 nanosecond interval, negative value indicates relative time
+
+	timer = CreateWaitableTimer(NULL, TRUE, NULL);
+	SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
+	WaitForSingleObject(timer, INFINITE);
+	CloseHandle(timer);
+}
+
+#else
+#error Unknown OS!
+#endif
 
 #if DIRTYCODE_DEBUG
 static void  _DebugAlert(ProtoSSLRefT *pState, uint8_t uAlertLevel, uint8_t uAlertType)
@@ -2039,6 +2059,7 @@ void ProtoSSLUpdate(ProtoSSLRefT *pState)
 
     // FIXME: Without this sleep it does not work! (SocketInfo result will be 0)
     usleep(100000);
+
 
     if (pState->iState == ST_WAIT)
     {

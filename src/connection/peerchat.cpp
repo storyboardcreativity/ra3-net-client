@@ -3,13 +3,28 @@
 #include <sstream>
 #include <string>
 #include <string.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include <chrono>
 #include <thread>
 #include <vector>
 #include <iterator>
+
+// OS-specific
+#ifdef _MSC_VER
+
+#include "unistd_windows.h"
+#include <WinSock2.h>
+
+#elif __linux__
+
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+#else
+
+#error Unknown OS!
+
+#endif
 
 // own headers
 #include "../printing_macros.h"
@@ -139,7 +154,7 @@ public:
         }
 
         int32_t optval = 1;
-        setsockopt(_socket_fd__peerchat, 0xFFFF, SO_RCVBUF, &optval, sizeof(optval));
+        setsockopt(_socket_fd__peerchat, 0xFFFF, SO_RCVBUF, (char*)&optval, sizeof(optval));
 
         sockaddr_in local_addr;
         memset((char *)&local_addr, 0, sizeof(local_addr));
@@ -153,7 +168,15 @@ public:
             connect(_socket_fd__peerchat, (sockaddr *)&_peerchat_addr, sizeof(_peerchat_addr)) == -1)
         {
             PROCESS_MESSAGE__ERROR("Could not bind or connect!");
-            close(_socket_fd__peerchat);
+
+#ifdef _MSC_VER
+			closesocket(_socket_fd__peerchat);
+#elif __linux__
+			close(_socket_fd__peerchat);
+#else
+#error Unknown OS!
+#endif
+
             return false;
         }
 
@@ -346,14 +369,14 @@ private:
             PROCESS_BUFMESSAGE__DEBUG(buff, size);
         }
 
-        int code = send(_socket_fd__peerchat, buff, size, 0);
+        int code = send(_socket_fd__peerchat, (char*)buff, size, 0);
         if (code == -1)
             PROCESS_MESSAGE__ERROR("Err: %s (%d)", strerror(errno), errno);
     }
 
     uint32_t recv_buffer(uint8_t *buff, uint32_t size)
     {
-        auto len = recv(_socket_fd__peerchat, buff, size, 0);
+        auto len = recv(_socket_fd__peerchat, (char*)buff, size, 0);
 
         if (len == -1)
             PROCESS_MESSAGE__ERROR("Err: %s (%d)", strerror(errno), errno)

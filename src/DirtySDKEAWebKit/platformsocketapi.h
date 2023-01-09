@@ -38,15 +38,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include <stddef.h> //for size_t
-#include <sys/socket.h>
 
-//#elif defined(_WIN32)
-	//http://msdn.microsoft.com/en-us/library/ms741394(VS.85).aspx 
-	//typedef int socklen_t;
+#if defined(_WIN32)
+
+	typedef int socklen_t;
+	typedef int platform_ssize_t;
+
+#elif defined(__linux__)
+
+	#include <sys/socket.h>
 	typedef ssize_t platform_ssize_t;
-//#endif
+	#include <bits/socket.h>
 
-#include <bits/socket.h>
+#else
+
+#error Unknown OS!
+
+#endif
 
 struct sockaddr;
 struct pollfd;

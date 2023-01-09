@@ -11,4 +11,13 @@ int append_format(std::string& str, const char *fmt, va_list ap);
 
 #endif
 
-int asprintf(char **strp, const char *fmt, ...);
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+	int asprintf(char **strp, const char *fmt, ...);
+
+#ifdef __cplusplus
+}
+#endif

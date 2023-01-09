@@ -1,6 +1,8 @@
 #include <string>
 
 // curlpp
+#define CURL_STATICLIB
+#define CURLPP_STATICLIB
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>

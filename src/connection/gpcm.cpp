@@ -5,15 +5,32 @@ GPCM - GameSpy Connection Manager
 */
 
 // std
-#include <unistd.h>
 #include <fcntl.h>
+#include <memory.h>
+#include <signal.h>
+
+// OS-specific
+#ifdef _MSC_VER
+
+#include "unistd_windows.h"
+#include <WinSock2.h>
+
+#define poll WSAPoll
+
+#elif __linux__
+
+#include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <memory.h>
 #include <netdb.h>
-#include <signal.h>
 #include <poll.h>
+
+#else
+
+#error Unknown OS!
+
+#endif
 
 // own headers
 #include "../printing_macros.h"
@@ -35,8 +52,15 @@ public:
             return false;
 
         // Make it non-blocking
-        int flags = fcntl(_socket_fd__gpcm, F_GETFL, 0);
-        fcntl(_socket_fd__gpcm, F_SETFL, flags | O_NONBLOCK);
+#ifdef _MSC_VER
+		u_long mode = 1;  // 1 to enable non-blocking socket
+		ioctlsocket(_socket_fd__gpcm, FIONBIO, &mode);
+#elif __linux__
+		int flags = fcntl(_socket_fd__gpcm, F_GETFL, 0);
+		fcntl(_socket_fd__gpcm, F_SETFL, flags | O_NONBLOCK);
+#else
+#error Unknown OS!
+#endif
 
         // Init address structure
         memset((char *)&_gpcm_addr, 0, sizeof(_gpcm_addr));
@@ -72,7 +96,15 @@ public:
             else
             {
                 PROCESS_MESSAGE__ERROR("Could not connect! Error msg: %s (%d)", strerror(errno), errno);
-                close(_socket_fd__gpcm);
+
+#ifdef _MSC_VER
+				closesocket(_socket_fd__gpcm);
+#elif __linux__
+				close(_socket_fd__gpcm);
+#else
+#error Unknown OS!
+#endif
+
                 return false;
             }
         }
@@ -159,14 +191,14 @@ private:
         PROCESS_MESSAGE__DEBUG("Sending data:");
         PROCESS_BUFMESSAGE__DEBUG(buff, size);
 
-        int code = send(_socket_fd__gpcm, buff, size, 0);
+        int code = send(_socket_fd__gpcm, (char*)buff, size, 0);
         if (code == -1)
             PROCESS_MESSAGE__ERROR("Err: %s (%d)", strerror(errno), errno);
     }
 
     uint32_t recv_gpcm_buffer(uint8_t *buff, uint32_t size)
     {
-        auto len = recv(_socket_fd__gpcm, buff, size, 0);
+        auto len = recv(_socket_fd__gpcm, (char*)buff, size, 0);
 
         if (len == -1)
             PROCESS_MESSAGE__ERROR("Err: %s (%d)", strerror(errno), errno)

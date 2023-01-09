@@ -1,9 +1,23 @@
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
+
+// OS-specific
+#ifdef _MSC_VER
+
+#include "unistd_windows.h"
+
+#elif __linux__
+
+#include <unistd.h>
+
+#else
+
+#error Unknown OS!
+
+#endif
 
 char *strnfcpy(char *dst, const char *src, int size)
 {

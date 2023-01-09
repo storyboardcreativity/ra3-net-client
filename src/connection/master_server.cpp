@@ -1,14 +1,28 @@
 // std
-#include <unistd.h>
+//#include <unistd.h>
 #include <fcntl.h>
+#include <memory.h>
+#include <signal.h>
+#include <stdint.h>
+
+// OS-specific
+#ifdef _MSC_VER
+
+#include "unistd_windows.h"
+
+#elif __linux__
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <memory.h>
 #include <netdb.h>
-#include <signal.h>
 #include <poll.h>
-#include <stdint.h>
+
+#else
+
+#error Unknown OS!
+
+#endif
 
 // own headers
 #include "../printing_macros.h"
@@ -65,7 +79,15 @@ public:
         if (connect(_socket_fd__ms, (sockaddr *)&_ms_addr, sizeof(_ms_addr)))
         {
             PROCESS_MESSAGE__ERROR("Could not connect! Error msg: %s (%d)", strerror(errno), errno);
-            close(_socket_fd__ms);
+
+#ifdef _MSC_VER
+			closesocket(_socket_fd__ms);
+#elif __linux__
+			close(_socket_fd__ms);
+#else
+#error Unknown OS!
+#endif
+
             return false;
         }
 
@@ -132,14 +154,14 @@ private:
         PROCESS_MESSAGE__DEBUG("Sending data:");
         PROCESS_BUFMESSAGE__DEBUG(buff, size);
 
-        int code = send(_socket_fd__ms, buff, size, 0);
+        int code = send(_socket_fd__ms, (char*)buff, size, 0);
         if (code == -1)
             PROCESS_MESSAGE__ERROR("Err: %s (%d)", strerror(errno), errno);
     }
 
     uint32_t recv_ms_buffer(uint8_t *buff, uint32_t size)
     {
-        auto len = recv(_socket_fd__ms, buff, size, 0);
+        auto len = recv(_socket_fd__ms, (char*)buff, size, 0);
 
         if (len == -1)
             PROCESS_MESSAGE__ERROR("Err: %s (%d)", strerror(errno), errno)

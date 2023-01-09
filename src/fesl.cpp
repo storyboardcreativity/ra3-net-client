@@ -3,11 +3,23 @@
 #include <sstream>
 #include <string>
 #include <string.h>
+#include <chrono>
+#include <thread>
+
+// OS-specific
+#ifdef _MSC_VER
+
+#elif __linux__
+
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include <chrono>
-#include <thread>
+
+#else
+
+#error Unknown OS!
+
+#endif
 
 // own headers
 #include "printing_macros.h"

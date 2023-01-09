@@ -39,6 +39,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdint.h>
 
+// OS-specific
+#ifdef _MSC_VER
+
+#include <WinSock2.h>
+#include <Ws2ipdef.h>
+#include <ws2tcpip.h>
+#include "unistd_windows.h"
+
+#elif __linux__
+
+#else
+
+#error Unknown OS!
+
+#endif
+
 /*** Defines **************************************************************************************/
 
 /*** Macros ***************************************************************************************/

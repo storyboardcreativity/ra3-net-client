@@ -1,13 +1,28 @@
-#include <sys/socket.h>
-#include <netdb.h>
 #include <errno.h>
-#include <poll.h>
-#include <unistd.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+
+// OS-specific
+#ifdef _MSC_VER
+
+#include "unistd_windows.h"
+#include <WinSock2.h>
+
+#elif __linux__
+
+#include <unistd.h>
+#include <poll.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+#else
+
+#error Unknown OS!
+
+#endif
 
 #include "platformsocketapi.h"
 #include "system_types.h"
@@ -57,8 +72,15 @@ int setsockopt_wrapper(int fd, int level, int optname, const void *optval, sockl
     // This fix is used for linux system without correct SO_NBIO
     if (optname == SO_NBIO)
     {
-        int flags = fcntl(fd, F_GETFL);
-        fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+#ifdef _MSC_VER
+		u_long mode = 1;  // 1 to enable non-blocking socket
+		ioctlsocket(fd, FIONBIO, &mode);
+#elif __linux__
+		int flags = fcntl(fd, F_GETFL);
+		fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+#else
+#error Unknown OS!
+#endif
         return 0;
     }
 
@@ -169,7 +191,23 @@ void init_socket_api_callbacks()
     callbacks->setsockopt = setsockopt_wrapper;
     callbacks->shutdown = shutdown;
     callbacks->socket = socket;
-    callbacks->close = close;
-    callbacks->poll = poll;
+
+	// OS-specific
+#ifdef _MSC_VER
+
+	callbacks->close = closesocket;
+	callbacks->poll = WSAPoll;
+
+#elif __linux__
+
+	callbacks->close = close;
+	callbacks->poll = poll;
+
+#else
+
+#error Unknown OS!
+
+#endif
+
     callbacks->getlasterror = getlasterror;
 }

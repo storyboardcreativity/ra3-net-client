@@ -3,11 +3,28 @@
 #include <sstream>
 #include <string>
 #include <string.h>
+#include <chrono>
+#include <thread>
+
+// OS-specific
+#ifdef _MSC_VER
+
+#include <WinSock2.h>
+#include <Ws2ipdef.h>
+#include <ws2tcpip.h>
+#include "unistd_windows.h"
+
+#elif __linux__
+
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include <chrono>
-#include <thread>
+
+#else
+
+#error Unknown OS!
+
+#endif
 
 // own headers
 #include "printing_macros.h"
@@ -103,7 +120,7 @@ int gamespy_recv_UDP_avail()
     socklen_t fromlen = 16;
 
     struct sockaddr from;
-    int len = recvfrom(g_socket_fd, buf, sizeof(buf), 0, &from, &fromlen);
+    int len = recvfrom(g_socket_fd, (char*)buf, sizeof(buf), 0, &from, &fromlen);
     if (len == -1)
         return 0;
 
