@@ -1,0 +1,263 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="460"
+        d:DesignHeight="540"
+        x:Class="RA3Client.GUI.LoginWindow"
+        Title="RA3 Client Login"
+        Width="460"
+        Height="540"
+        MinWidth="460"
+        MinHeight="540"
+        WindowStartupLocation="CenterScreen"
+        CanResize="True"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        FontFamily="Segoe UI, Arial"
+        Classes.light="True">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#F3F5F9"/>
+        <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="TextBrush" Color="#0F172A"/>
+        <SolidColorBrush x:Key="MutedTextBrush" Color="#64748B"/>
+        <SolidColorBrush x:Key="LabelBrush" Color="#475569"/>
+        <SolidColorBrush x:Key="InputBackgroundBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#CBD5E1"/>
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#2563EB"/>
+        <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#1D4ED8"/>
+        <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SecondaryHoverBrush" Color="#F1F5F9"/>
+    </Window.Resources>
+
+    <Window.Styles>
+
+        <Style Selector="Window.dark">
+            <Setter Property="Background" Value="#111827"/>
+        </Style>
+
+        <Style Selector="Window.dark Border.card">
+            <Setter Property="Background" Value="#1F2937"/>
+            <Setter Property="BorderBrush" Value="#374151"/>
+        </Style>
+
+        <Style Selector="Window.dark TextBlock">
+            <Setter Property="Foreground" Value="#E5E7EB"/>
+        </Style>
+
+        <Style Selector="Window.dark TextBlock.muted">
+            <Setter Property="Foreground" Value="#9CA3AF"/>
+        </Style>
+
+        <Style Selector="Window.dark TextBlock.FieldLabel">
+            <Setter Property="Foreground" Value="#D1D5DB"/>
+        </Style>
+
+        <Style Selector="Window.dark TextBox">
+            <Setter Property="Background" Value="#111827"/>
+            <Setter Property="Foreground" Value="#F9FAFB"/>
+            <Setter Property="BorderBrush" Value="#4B5563"/>
+            <Setter Property="CaretBrush" Value="#F9FAFB"/>
+        </Style>
+
+        <Style Selector="Window.dark CheckBox">
+            <Setter Property="Foreground" Value="#D1D5DB"/>
+        </Style>
+
+        <Style Selector="Window.dark Button.secondary">
+            <Setter Property="Background" Value="#374151"/>
+            <Setter Property="Foreground" Value="#F9FAFB"/>
+            <Setter Property="BorderBrush" Value="#4B5563"/>
+        </Style>
+
+        <Style Selector="Window.dark Button.secondary:pointerover">
+            <Setter Property="Background" Value="#4B5563"/>
+        </Style>
+
+        <Style Selector="Window.dark Button.themeButton">
+            <Setter Property="Background" Value="#374151"/>
+            <Setter Property="Foreground" Value="#F9FAFB"/>
+            <Setter Property="BorderBrush" Value="#4B5563"/>
+        </Style>
+
+        <Style Selector="Window.dark Button.themeButton:pointerover">
+            <Setter Property="Background" Value="#4B5563"/>
+        </Style>
+
+        <Style Selector="TextBlock.FieldLabel">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <Style Selector="TextBox">
+            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="Padding" Value="11,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Button">
+            <Setter Property="MinHeight" Value="38"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12,7"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="#1D4ED8"/>
+        </Style>
+
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Button.secondary:pointerover">
+            <Setter Property="Background" Value="#F1F5F9"/>
+        </Style>
+
+        <Style Selector="Button.themeButton">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="CheckBox">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+    </Window.Styles>
+
+    <Grid Margin="20">
+        <Border Classes="card"
+                Background="#FFFFFF"
+                CornerRadius="14"
+                Padding="24"
+                BorderBrush="#E2E8F0"
+                BorderThickness="1">
+
+            <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
+
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="*,Auto"
+                      Margin="0,0,0,22">
+
+                    <StackPanel Grid.Column="0"
+                                Spacing="5"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="RA3 Client"
+                                   FontSize="25"
+                                   FontWeight="Bold"
+                                   Foreground="#0F172A"/>
+
+                        <TextBlock Text="Войдите в свою учётную запись"
+                                   Classes="muted"
+                                   FontSize="13"
+                                   Foreground="#64748B"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="1"
+                            Name="ThemeButton"
+                            Classes="themeButton"
+                            Content="🌙"
+                            ToolTip.Tip="Переключить тему"
+                            MinWidth="44"
+                            VerticalAlignment="Top"
+                            Click="ThemeButton_Click"/>
+
+                </Grid>
+
+                <StackPanel Grid.Row="1" Spacing="14">
+
+                    <StackPanel Spacing="0">
+                        <TextBlock Text="Логин"
+                                   Classes="FieldLabel"/>
+
+                        <TextBox Name="LoginTextBox"
+                                 Text="player123"
+                                 Watermark="Введите логин"
+                                 TabIndex="0"/>
+                    </StackPanel>
+
+                    <StackPanel Spacing="0">
+                        <TextBlock Text="Пароль"
+                                   Classes="FieldLabel"/>
+
+                        <TextBox Name="PasswordTextBox"
+                                 Text="password123"
+                                 PasswordChar="*"
+                                 Watermark="Введите пароль"
+                                 TabIndex="1"/>
+                    </StackPanel>
+
+                    <StackPanel Spacing="0">
+                        <TextBlock Text="User ID"
+                                   Classes="FieldLabel"/>
+
+                        <TextBox Name="UserIdTextBox"
+                                 Text="Player123"
+                                 Watermark="Введите идентификатор"
+                                 TabIndex="2"/>
+                    </StackPanel>
+
+                </StackPanel>
+
+                <CheckBox Grid.Row="2"
+                          Name="RememberMeCheckBox"
+                          Content="Запомнить меня"
+                          VerticalAlignment="Center"
+                          Margin="0,14"
+                          TabIndex="3"/>
+
+                <Grid Grid.Row="3"
+                      ColumnDefinitions="*,*"
+                      ColumnSpacing="10">
+
+                    <Button Grid.Column="0"
+                            Name="LoginButton"
+                            Content="Войти"
+                            Classes="primary"
+                            HorizontalAlignment="Stretch"
+                            IsDefault="True"
+                            TabIndex="4"/>
+
+                    <Button Grid.Column="1"
+                            Name="CancelButton"
+                            Content="Отмена"
+                            Classes="secondary"
+                            HorizontalAlignment="Stretch"
+                            IsCancel="True"
+                            TabIndex="5"/>
+
+                </Grid>
+
+                <TextBlock Grid.Row="4"
+                           Text="RA3 Client"
+                           Classes="muted"
+                           FontSize="11"
+                           Foreground="#94A3B8"
+                           HorizontalAlignment="Center"
+                           Margin="0,16,0,0"/>
+
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="260"
+        x:Class="RA3Client.GUI.LoginProgressWindow"
+        Title="RA3 Client Login Progress"
+        Width="400" Height="260">
+    <StackPanel Margin="20">
+        <TextBlock Text="RA3 Client Login Progress" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20" />
+        
+        <StackPanel Margin="0,0,0,15">
+            <TextBlock Name="StatusText" Text="Initializing connection..." Margin="0,0,0,10" />
+            <ProgressBar Name="ProgressBar" Value="0" Height="20" Margin="0,0,0,10" />
+        </StackPanel>
+
+        <StackPanel Margin="0,0,0,15">
+            <TextBlock Name="SuboperationStatusText" Text="Initializing connection..." Margin="0,0,0,10" />
+            <ProgressBar Name="SuboperationProgressBar" Value="0" Height="20" Margin="0,0,0,10" />
+        </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Name="CancelButton" Content="Cancel" Width="100" Height="30" />
+        </StackPanel>
+    </StackPanel>
+</Window>

@@ -1,0 +1,249 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="RA3Client.GUI.MainWindow"
+        Title="RA3 Client GUI"
+        Width="1280" Height="720">
+
+    <TabControl>
+        <TabItem Header="Chat Lobbies">
+            <Grid ColumnDefinitions="260,5,*"
+                RowDefinitions="*"
+                Margin="10">
+
+                <!-- Left side -->
+                <Grid Grid.Column="0"
+                    RowDefinitions="Auto,Auto,Auto,*"
+                    Margin="0,0,10,0">
+
+                    <TextBlock Grid.Row="0"
+                            Text="Lobby"
+                            FontSize="18"
+                            FontWeight="Bold"
+                            Margin="0,0,0,8"/>
+
+                    <ComboBox Grid.Row="1"
+                            Name="LobbyComboBox"
+                            PlaceholderText="Select lobby"
+                            SelectedIndex="0"
+                            Margin="0,0,0,15">
+                        <ComboBoxItem Content="Lobby 1"/>
+                        <ComboBoxItem Content="Lobby 2"/>
+                        <ComboBoxItem Content="Lobby 3"/>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="2"
+                            Text="Players"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Margin="0,0,0,8"/>
+
+                    <ListBox Grid.Row="3"
+                            Name="PlayerListBox"
+                            SelectionMode="Single">
+                        <ListBoxItem Content="Player1"/>
+                        <ListBoxItem Content="Player2"/>
+                        <ListBoxItem Content="Player3"/>
+                        <ListBoxItem Content="Player4"/>
+                    </ListBox>
+
+                </Grid>
+
+                <!-- Splitter -->
+                <GridSplitter Grid.Column="1"
+                    Width="5"
+                    HorizontalAlignment="Stretch"
+                    Background="Gray"/>
+
+                <!-- Right side -->
+                <Grid Grid.Column="2"
+                    RowDefinitions="Auto,*,Auto"
+                    Margin="10,0,0,0">
+
+                    <TextBlock Grid.Row="0"
+                            Text="Lobby Chat"
+                            FontSize="18"
+                            FontWeight="Bold"
+                            Margin="0,0,0,10"/>
+
+                    <ScrollViewer Grid.Row="1"
+                                Name="ChatScrollViewer"
+                                VerticalScrollBarVisibility="Auto">
+
+                        <StackPanel Name="ChatMessages"
+                                    Spacing="8">
+
+                            <TextBlock Text="[12:00] System: Welcome to the lobby!"
+                                    TextWrapping="Wrap"/>
+
+                            <TextBlock Text="[12:01] Player1: Hello everyone!"
+                                    TextWrapping="Wrap"/>
+
+                            <TextBlock Text="[12:02] Player2: Hi!"
+                                    TextWrapping="Wrap"/>
+
+                        </StackPanel>
+
+                    </ScrollViewer>
+
+                    <Grid Grid.Row="2"
+                        ColumnDefinitions="*,Auto"
+                        Margin="0,10,0,0">
+
+                        <TextBox Grid.Column="0"
+                                Name="ChatInput"
+                                Watermark="Enter your message..."
+                                VerticalContentAlignment="Center"
+                                MinHeight="38"
+                                Margin="0,0,10,0"/>
+
+                        <Button Grid.Column="1"
+                                Name="SendMessageButton"
+                                Content="Send"
+                                Width="90"
+                                Height="38"/>
+
+                    </Grid>
+
+                </Grid>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Play Game" IsEnabled="False">
+        </TabItem>
+
+        <TabItem Header="Join Game">
+            <Grid Margin="10"
+                RowDefinitions="*,Auto">
+
+                <Grid Grid.Row="0"
+                    RowDefinitions="Auto,*">
+
+                    <Border Grid.Row="0"
+                            BorderBrush="Gray"
+                            BorderThickness="1"
+                            Padding="5">
+                        <Grid ColumnDefinitions="100,2*,2*,100">
+                            <TextBlock Grid.Column="0"
+                                    Text="Status"
+                                    FontWeight="Bold"/>
+
+                            <TextBlock Grid.Column="1"
+                                    Text="Game Name"
+                                    FontWeight="Bold"/>
+
+                            <TextBlock Grid.Column="2"
+                                    Text="Map"
+                                    FontWeight="Bold"/>
+
+                            <TextBlock Grid.Column="3"
+                                    Text="Players"
+                                    FontWeight="Bold"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Список игр с выбором строки -->
+                    <ListBox Grid.Row="1"
+                            Name="GamesListBox"
+                            SelectionMode="Single"
+                            BorderBrush="Gray"
+                            BorderThickness="1"
+                            CornerRadius="0">
+
+                        <ListBoxItem Padding="5">
+                            <Grid ColumnDefinitions="100,2*,2*,100">
+                                <TextBlock Grid.Column="0" Text="Open"/>
+                                <TextBlock Grid.Column="1" Text="Fun Match"/>
+                                <TextBlock Grid.Column="2" Text="Tournament Desert"/>
+                                <TextBlock Grid.Column="3" Text="2/8"/>
+                            </Grid>
+                        </ListBoxItem>
+
+                        <ListBoxItem Padding="5">
+                            <Grid ColumnDefinitions="100,2*,2*,100">
+                                <TextBlock Grid.Column="0" Text="Open"/>
+                                <TextBlock Grid.Column="1" Text="Ranked Game"/>
+                                <TextBlock Grid.Column="2" Text="Redzone Rampage"/>
+                                <TextBlock Grid.Column="3" Text="4/6"/>
+                            </Grid>
+                        </ListBoxItem>
+
+                        <ListBoxItem Padding="5">
+                            <Grid ColumnDefinitions="100,2*,2*,100">
+                                <TextBlock Grid.Column="0" Text="In Game"/>
+                                <TextBlock Grid.Column="1" Text="Pro Match"/>
+                                <TextBlock Grid.Column="2" Text="Pipeline Problems"/>
+                                <TextBlock Grid.Column="3" Text="6/6"/>
+                            </Grid>
+                        </ListBoxItem>
+
+                    </ListBox>
+                </Grid>
+
+                <StackPanel Grid.Row="1"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Spacing="10"
+                            Margin="0,10,0,0">
+
+                    <Button Name="RefreshGamesButton"
+                            Content="Refresh"
+                            Width="100"
+                            Height="35"/>
+
+                    <Button Name="JoinGameButton"
+                            Content="Join Game"
+                            Width="120"
+                            Height="35"/>
+
+                </StackPanel>
+
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Host Game" IsEnabled="False">
+        </TabItem>
+
+        <TabItem Header="Track Record">
+        </TabItem>
+
+        <TabItem Header="Main">
+            <StackPanel Margin="10">
+                <TextBlock Text="RA3 Client GUI" FontSize="20" FontWeight="Bold" Margin="0,0,0,20" />
+                
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <Button Name="ConnectButton" Content="Connect" Width="100" Height="30" Margin="0,0,10,0" />
+                    <Button Name="DisconnectButton" Content="Disconnect" Width="100" Height="30" Margin="0,0,10,0" />
+                    <Button Name="ExitButton" Content="Exit" Width="100" Height="30" />
+                </StackPanel>
+                
+                <GroupBox Header="Connection Status" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Name="StatusText" Text="Not connected" />
+                        <TextBlock Name="ServerText" Text="Server: Not set" />
+                        <TextBlock Name="UsernameText" Text="User: Not set" />
+                    </StackPanel>
+                </GroupBox>
+                
+                <GroupBox Header="Client Info" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Name="VersionText" Text="Version: 1.0.0" />
+                        <TextBlock Name="BuildText" Text="Build: Unknown" />
+                    </StackPanel>
+                </GroupBox>
+                
+                <GroupBox Header="Logs" Margin="0,0,0,10">
+                    <ScrollViewer Height="100">
+                        <TextBlock Name="LogText" Text="Logs will appear here..." TextWrapping="Wrap" />
+                    </ScrollViewer>
+                </GroupBox>
+            </StackPanel>
+        </TabItem>
+
+        <TabItem Header="About">
+            <TextBlock Text="Application info" Margin="15"/>
+        </TabItem>
+    </TabControl>
+</Window>

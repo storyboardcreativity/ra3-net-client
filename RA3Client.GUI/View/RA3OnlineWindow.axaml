@@ -1,0 +1,47 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+        x:Class="RA3Client.GUI.RA3OnlineWindow"
+        Title="Red Alert 3 Online"
+        Width="600" Height="400">
+    <StackPanel Margin="10">
+        <TextBlock Text="Red Alert 3 Online" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10" />
+        
+        <TabControl Name="MainTabControl" Margin="0,0,0,10">
+            <TabItem Header="Chat Lobbies">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Chat Lobbies" FontWeight="Bold" Margin="0,0,0,10" />
+                    <ListBox Name="LobbyListBox" Height="150">
+                        <ListBoxItem Content="BattleCast" />
+                        <ListBoxItem Content="Дополнительные карты 01" />
+                        <ListBoxItem Content="Дополнительные карты 02" />
+                        <ListBoxItem Content="ИСПАНСКИЙ 01" />
+                        <ListBoxItem Content="Кланы 01" />
+                        <ListBoxItem Content="Кланы 02" />
+                        <ListBoxItem Content="Корейский 01" />
+                        <ListBoxItem Content="Любители 01" />
+                        <ListBoxItem Content="Любители 02" />
+                    </ListBox>
+                    <Button Name="JoinLobbyButton" Content="Join Lobby" Margin="0,10,0,0" Width="100" HorizontalAlignment="Left" />
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Join Game">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Join Game" FontWeight="Bold" Margin="0,0,0,10" />
+                    <ListBox Name="GameListBox" Height="150">
+                        <ListBoxItem Content="Game 1 - Map A" />
+                        <ListBoxItem Content="Game 2 - Map B" />
+                        <ListBoxItem Content="Game 3 - Map C" />
+                    </ListBox>
+                    <Button Name="JoinGameButton" Content="Join Game" Margin="0,10,0,0" Width="100" HorizontalAlignment="Left" />
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+        
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Name="LogoutButton" Content="Logout" Width="100" Height="30" Margin="0,0,10,0" />
+        </StackPanel>
+    </StackPanel>
+</Window>
